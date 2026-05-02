@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ظامِتْ | Dhamié</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --gold:#C9933A;--gold-l:#E8B860;--gold-d:#8B6320;
+  --board:#D4B07A;--deep:#130E04;--dark:#221508;--dark2:#2D1A08;
+  --cream:#FAF3E0;--sand:#C9A876;
+  --baton-t:#F2C84B;--baton-m:#C89228;--baton-b:#7A5510;
+  --dung-t:#5A3820;--dung-m:#261408;--dung-b:#0E0704;
+  --sultan:#FFD700;
+}
+body{background:var(--deep);color:var(--cream);font-family:'Inter',sans-serif;
+  min-height:100vh;overflow:hidden;
+  background-image:radial-gradient(ellipse at 25% 25%,rgba(201,147,58,.1) 0%,transparent 55%),
+  radial-gradient(ellipse at 75% 75%,rgba(201,147,58,.07) 0%,transparent 55%)}
+body[lang="ar"]{direction:rtl;font-family:'Cairo',sans-serif}
+.screen{display:none;position:fixed;inset:0}
+.screen.active{display:flex;flex-direction:column}
+
+/* –– LANG –– */
+.lbar{position:fixed;top:10px;right:10px;z-index:99;display:flex;
+background:rgba(0,0,0,.75);border:1px solid rgba(201,147,58,.5);border-radius:8px;overflow:hidden}
+body[lang=“ar”] .lbar{right:auto;left:10px}
+.lb{padding:6px 13px;border:none;background:transparent;color:var(–sand);
+cursor:pointer;font-size:.75rem;font-weight:600;font-family:inherit}
+.lb.on{background:var(–gold);color:var(–deep)}
+
+/* –– BUTTONS –– */
+.btn{padding:12px 22px;border:none;cursor:pointer;font-family:inherit;
+font-size:.92rem;font-weight:600;border-radius:8px;transition:all .2s;outline:none}
+.btn-p{background:linear-gradient(135deg,var(–gold-d),var(–gold),var(–gold-l));
+color:var(–deep);box-shadow:0 4px 16px rgba(201,147,58,.35);padding:14px 22px}
+.btn-p:active{transform:scale(.97)}
+.btn-s{background:rgba(201,147,58,.12);color:var(–gold-l);border:1px solid rgba(201,147,58,.4)}
+.btn-g{background:transparent;color:var(–sand);border:1px solid rgba(255,255,255,.2);font-size:.83rem}
+.btn-d{background:rgba(180,40,40,.3);color:#FF9090;border:1px solid rgba(180,40,40,.5)}
+.btn-sm{padding:5px 10px;font-size:.73rem;border-radius:6px}
+
+/* –– MENU –– */
+#menu-screen{align-items:center;justify-content:center;padding:20px}
+.mwrap{text-align:center;max-width:420px;width:100%}
+.gtitle{font-family:‘Amiri’,serif;font-size:clamp(3.5rem,12vw,6rem);color:var(–gold);
+line-height:1;text-shadow:0 0 40px rgba(201,147,58,.5);animation:glow 3.5s ease-in-out infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 30px rgba(201,147,58,.4)}50%{text-shadow:0 0 65px rgba(201,147,58,.8)}}
+.gsub{font-family:‘Amiri’,serif;font-size:clamp(.8rem,2.5vw,1rem);
+color:var(–sand);margin-top:6px;letter-spacing:3px;font-style:italic}
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0;justify-content:center}
+.divider::before,.divider::after{content:’’;flex:1;height:1px;
+background:linear-gradient(90deg,transparent,var(–gold),transparent);max-width:100px}
+.divider span{color:var(–gold)}
+.mbtns{display:flex;flex-direction:column;gap:10px}
+.ver{margin-top:14px;font-size:.65rem;color:rgba(255,255,255,.18);letter-spacing:3px}
+
+/* –– SETUP –– */
+#setup-screen{align-items:center;justify-content:center;padding:16px;overflow-y:auto;background:var(–deep)}
+.scard{background:rgba(20,12,4,.92);border:1.5px solid rgba(201,147,58,.42);
+border-radius:14px;padding:24px;max-width:400px;width:100%}
+.sttl{font-family:‘Amiri’,serif;font-size:1.55rem;color:var(–gold);text-align:center;margin-bottom:18px}
+.fg{margin-bottom:13px}
+.fl{display:block;font-size:.8rem;color:var(–gold-l);margin-bottom:5px;font-weight:600}
+.fi,.fs{width:100%;padding:10px 13px;background:rgba(255,255,255,.13);
+border:1.5px solid rgba(201,147,58,.48);border-radius:8px;color:#FFF;
+font-family:inherit;font-size:.88rem;outline:none;-webkit-appearance:none}
+.fi::placeholder{color:rgba(255,255,255,.38)}
+.fi:focus,.fs:focus{border-color:var(–gold)}
+.fs option{background:#221508;color:#FFF}
+.trow{display:flex;align-items:center;justify-content:space-between;
+background:rgba(255,255,255,.06);border:1px solid rgba(201,147,58,.28);
+border-radius:8px;padding:9px 13px}
+.tlbl{font-size:.8rem;color:var(–gold-l);font-weight:600}
+.tgl{position:relative;width:42px;height:22px;flex-shrink:0}
+.tgl input{opacity:0;width:0;height:0;position:absolute}
+.tsl{position:absolute;inset:0;background:rgba(255,255,255,.15);border-radius:11px;cursor:pointer;transition:.3s}
+.tsl::before{content:’’;position:absolute;width:16px;height:16px;left:3px;top:3px;
+background:#fff;border-radius:50%;transition:.3s}
+.tgl input:checked+.tsl{background:var(–gold)}
+.tgl input:checked+.tsl::before{transform:translateX(20px)}
+.sacts{display:flex;gap:10px;margin-top:16px}
+.sacts .btn{flex:1}
+
+/* –– GAME HEADER –– */
+#game-screen{flex-direction:column}
+.ghdr{display:flex;align-items:center;justify-content:space-between;
+padding:8px 12px;background:rgba(0,0,0,.52);
+border-bottom:1px solid rgba(201,147,58,.2);flex-shrink:0;gap:8px}
+.hlogo{font-family:‘Amiri’,serif;font-size:1.4rem;color:var(–gold);letter-spacing:2px}
+.hbtns{display:flex;gap:5px;align-items:center}
+.tdisp{background:rgba(0,0,0,.4);border:1px solid rgba(201,147,58,.3);
+border-radius:5px;padding:3px 8px;font-size:.74rem;color:var(–gold-l);min-width:48px;text-align:center}
+.tdisp.low{color:#FF6060;border-color:#FF6060;animation:blink .5s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* –– LAYOUT –– */
+.glayout{flex:1;display:flex;overflow:hidden}
+
+/* –– PANELS –– */
+.sp{width:165px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;
+padding:10px 7px;background:rgba(0,0,0,.42);
+border-inline-end:1px solid rgba(201,147,58,.18);overflow-y:auto}
+.sp.rp{border-inline-end:none;border-inline-start:1px solid rgba(201,147,58,.18)}
+.pcard{background:rgba(15,8,2,.82);border:1.5px solid rgba(201,147,58,.22);
+border-radius:10px;padding:10px;transition:all .28s}
+.pcard.on{border-color:var(–gold);background:rgba(40,22,5,.92);
+box-shadow:0 0 14px rgba(201,147,58,.22)}
+.pcard.bc{border-inline-start:3px solid var(–baton-m)}
+.pcard.dc{border-inline-start:3px solid var(–dung-t)}
+.pnm{font-size:.86rem;font-weight:700;margin-bottom:3px;
+display:flex;align-items:center;gap:6px;color:#FFF}
+/* Piece icons in panel */
+.ico-b{width:9px;height:18px;flex-shrink:0;position:relative;display:inline-flex;flex-direction:column;align-items:center}
+.ico-b .ih{width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(–baton-t),var(–baton-b));flex-shrink:0}
+.ico-b .is{width:3px;flex:1;background:linear-gradient(var(–baton-t),var(–baton-b));border-radius:1px}
+.ico-d{width:10px;height:14px;flex-shrink:0;position:relative;display:inline-block}
+.ico-d::before{content:’’;position:absolute;inset:0;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+background:radial-gradient(circle at 38% 30%,var(–dung-t),var(–dung-b))}
+.ppc,.psul{font-size:.73rem;margin-top:1px;color:#C8A060}
+.pturn{font-size:.66rem;color:var(–gold);margin-top:4px;opacity:0;transition:.3s;font-weight:700}
+.pcard.on .pturn{opacity:1}
+.sttl2{font-size:.62rem;letter-spacing:2px;color:rgba(255,255,255,.28);
+text-transform:uppercase;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.08)}
+.mhist{overflow-y:auto;font-size:.68rem;color:var(–sand);line-height:1.85;max-height:200px}
+.me{padding:1px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.me:last-child{color:var(–gold-l);font-weight:600}
+.mn{color:rgba(255,255,255,.28);margin-inline-end:3px}
+.caps{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}
+/* Captured icons */
+.cb{width:7px;height:12px;flex-shrink:0;position:relative;display:inline-flex;flex-direction:column;align-items:center}
+.cb .ch{width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(–baton-t),var(–baton-b));flex-shrink:0;opacity:.8}
+.cb .cs{width:2px;flex:1;background:var(–baton-m);opacity:.8;border-radius:1px}
+.cd{width:8px;height:11px;flex-shrink:0;position:relative;display:inline-block}
+.cd::before{content:’’;position:absolute;inset:0;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+background:radial-gradient(circle at 38% 30%,var(–dung-t),var(–dung-b));opacity:.8}
+.ibox{background:rgba(201,147,58,.07);border:1px solid rgba(201,147,58,.2);
+border-radius:7px;padding:8px;font-size:.7rem;color:var(–sand);line-height:1.75}
+.ibox b{color:var(–gold-l)}
+.sfb{background:rgba(220,60,0,.18);border:1px solid rgba(220,80,0,.5);
+border-radius:7px;padding:6px 9px;font-size:.73rem;color:#FF9060;
+text-align:center;animation:sfp .75s ease-in-out infinite}
+@keyframes sfp{0%,100%{opacity:.78}50%{opacity:1}}
+
+/* –– BOARD AREA –– */
+.ba{flex:1;display:flex;align-items:center;justify-content:center;
+padding:6px;min-width:0;min-height:0;overflow:hidden}
+
+/* Board outer frame */
+.bframe{background:linear-gradient(145deg,#9A6030,#6B4020,#3A1E08);
+padding:11px;border-radius:10px;width:100%;
+box-shadow:0 16px 50px rgba(0,0,0,.75),inset 0 2px 6px rgba(255,200,120,.2)}
+
+/* Board inner (sand surface) */
+.binner{background:#D4B07A;border-radius:5px;padding:13px;
+box-shadow:inset 0 0 20px rgba(100,55,15,.18)}
+
+/* Labels row */
+.lbltop{display:grid;grid-template-columns:18px repeat(9,1fr);
+margin-bottom:2px;font-size:.58rem;color:rgba(55,30,8,.8);font-weight:700}
+.lbltop span{display:flex;align-items:center;justify-content:center}
+
+/* Main board row */
+.bmain{display:flex;gap:2px}
+.lblside{display:flex;flex-direction:column;width:18px;flex-shrink:0;
+font-size:.58rem;color:rgba(55,30,8,.8);font-weight:700}
+.lblside span{flex:1;display:flex;align-items:center;justify-content:center}
+
+/* The grid wrapper — MUST be square */
+.bgwrap{position:relative;flex:1}
+.bgwrap::after{content:’’;display:block;padding-bottom:100%}
+.bginner{position:absolute;inset:0}
+#bsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#igrid{position:absolute;inset:0;
+display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr)}
+
+/* Intersections */
+.ix{position:relative;display:flex;align-items:center;justify-content:center;
+cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ix.sel{background:radial-gradient(circle,rgba(255,215,0,.45) 0%,transparent 65%)}
+.ix.vm::before{content:’’;position:absolute;width:28%;height:28%;border-radius:50%;
+background:rgba(255,215,0,.55);border:2px solid #FFD700;z-index:4;
+animation:pd .9s ease-in-out infinite;pointer-events:none}
+.ix.vm.hp::before{width:76%;height:76%;background:transparent;border:2.5px solid rgba(255,80,80,.9)}
+@keyframes pd{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.2);opacity:1}}
+.ix.lm{background:radial-gradient(circle,rgba(255,215,0,.15) 0%,transparent 65%)}
+.ix.sf{background:radial-gradient(circle,rgba(255,100,0,.45) 0%,transparent 68%)!important;
+animation:sfhl .7s ease-in-out infinite}
+@keyframes sfhl{0%,100%{background:radial-gradient(circle,rgba(255,100,0,.35) 0%,transparent 68%)}
+50%{background:radial-gradient(circle,rgba(255,140,0,.65) 0%,transparent 68%)}}
+/* Morada marker */
+.mrd{position:absolute;pointer-events:none;z-index:1;display:flex;align-items:center;justify-content:center}
+.mrd::before,.mrd::after{content:’’;position:absolute;background:rgba(180,120,20,.85)}
+.mrd::before{width:1.5px;height:70%;left:50%;transform:translateX(-50%)}
+.mrd::after{width:70%;height:1.5px;top:50%;transform:translateY(-50%)}
+.mrd2{position:absolute;pointer-events:none;z-index:1;transform:rotate(45deg);
+display:flex;align-items:center;justify-content:center}
+.mrd2::before,.mrd2::after{content:’’;position:absolute;background:rgba(201,147,58,.65)}
+.mrd2::before{width:1.5px;height:70%;left:50%;transform:translateX(-50%)}
+.mrd2::after{width:70%;height:1.5px;top:50%;transform:translateY(-50%)}
+
+/* –– PIECES — SVG based, no overflow –– */
+.piece-baton{
+position:absolute;
+top:2%; left:50%;
+transform:translateX(-50%);
+width:55%; height:94%;
+z-index:3;cursor:pointer;pointer-events:all;
+transition:transform .14s;
+}
+.piece-dung{
+position:absolute;
+top:5%; left:50%;
+transform:translateX(-50%);
+width:72%; height:80%;
+z-index:3;cursor:pointer;pointer-events:all;
+transition:transform .14s;
+}
+.piece-baton:active{transform:translateX(-50%) scale(1.1)}
+.piece-dung:active{transform:translateX(-50%) scale(1.1)}
+.piece-baton.sel{transform:translateX(-50%) scale(1.12);filter:drop-shadow(0 0 5px rgba(255,215,0,.9))}
+.piece-dung.sel{transform:translateX(-50%) scale(1.12);filter:drop-shadow(0 0 5px rgba(255,215,0,.9))}
+
+/* –– STATUS BAR –– */
+.sbar{padding:8px 13px;background:rgba(0,0,0,.52);
+border-top:1px solid rgba(201,147,58,.18);
+display:flex;align-items:center;justify-content:space-between;
+flex-shrink:0;gap:10px}
+.smsg{font-size:.78rem;color:var(–sand);flex:1;text-align:center}
+.smsg.suc{color:#7CFF7C}.smsg.sof{color:#FF7040;font-weight:700}
+.pbadge{padding:3px 10px;border-radius:20px;font-size:.66rem;letter-spacing:1px;
+background:rgba(201,147,58,.15);border:1px solid rgba(201,147,58,.3);color:var(–gold-l);white-space:nowrap}
+
+/* –– MODAL –– */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.88);
+display:flex;align-items:center;justify-content:center;z-index:100;
+opacity:0;pointer-events:none;transition:opacity .28s;backdrop-filter:blur(5px)}
+.mo.show{opacity:1;pointer-events:all}
+.modal{background:linear-gradient(145deg,var(–dark),var(–dark2));
+border:1.5px solid rgba(201,147,58,.4);border-radius:14px;
+padding:26px;max-width:360px;width:92%;text-align:center;
+box-shadow:0 20px 70px rgba(0,0,0,.9);transform:scale(.88);transition:transform .28s}
+.mo.show .modal{transform:scale(1)}
+.mi{font-size:2.7rem;margin-bottom:9px}
+.mt{font-family:‘Amiri’,serif;font-size:1.65rem;color:var(–gold);margin-bottom:7px}
+.mx{color:var(–sand);font-size:.84rem;line-height:1.72;margin-bottom:16px}
+.ma{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.ma .btn{min-width:95px}
+.shi{display:flex;gap:6px;margin-top:7px}
+.shi input{flex:1;font-size:.68rem;padding:6px 9px}
+
+/* –– RULES –– */
+#rules-screen{overflow-y:auto;padding:18px;background:var(–deep)}
+#rules-screen.active{display:block}
+.rhdr{display:flex;align-items:center;gap:12px;margin-bottom:18px;
+padding-bottom:12px;border-bottom:1px solid rgba(201,147,58,.2)}
+.rtit{font-family:‘Amiri’,serif;font-size:1.75rem;color:var(–gold)}
+.rsec{margin-bottom:16px;padding:14px;background:rgba(255,255,255,.03);
+border:1px solid rgba(201,147,58,.14);border-radius:9px;max-width:700px}
+.rsec h3{color:var(–gold-l);font-size:1.05rem;margin-bottom:8px}
+.rsec p,.rsec li{color:var(–sand);font-size:.82rem;line-height:1.9;margin-bottom:4px}
+.rsec ul{padding-inline-start:15px}
+.term{color:var(–gold);font-weight:700}
+
+/* –– TOAST –– */
+.toast{position:fixed;bottom:62px;left:50%;transform:translateX(-50%) translateY(16px);
+background:rgba(18,10,2,.97);border:1px solid var(–gold);color:var(–cream);
+padding:8px 20px;border-radius:26px;font-size:.78rem;opacity:0;transition:all .28s;
+z-index:200;pointer-events:none;text-align:center;max-width:88vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* –– SIZING — JS controlled for perfect square –– */
+#bfw{flex-shrink:0}
+.bgwrap{position:relative}
+.bginner{position:absolute;inset:0}
+#bsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#igrid{position:absolute;inset:0;
+display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr)}
+@media(max-width:600px){
+.glayout{flex-direction:column}
+.sp{width:100%;flex-direction:row;flex-wrap:wrap;max-height:88px;overflow:hidden}
+.sttl2,.mhist,.ibox{display:none}.rp{display:none}
+}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:rgba(201,147,58,.3);border-radius:2px}
+</style>
+
+</head>
+<body lang="fr">
+
+<div class="lbar">
+  <button class="lb on" id="lfr" onclick="setLang('fr')">FR</button>
+  <button class="lb" id="lar" onclick="setLang('ar')">عر</button>
+</div>
+
+<!-- MENU -->
+
+<div id="menu-screen" class="screen active">
+  <div class="mwrap">
+    <div class="gtitle">ظامِتْ</div>
+    <div class="gsub" id="gsub">Le jeu mauritanien authentique</div>
+    <div class="divider"><span>✦</span></div>
+    <div class="mbtns">
+      <button class="btn btn-p" onclick="showSetup('local')"><span id="b-local">♟ Jeu local (2 joueurs)</span></button>
+      <button class="btn btn-s" onclick="showSetup('ai')"><span id="b-ai">🤖 Contre l'ordinateur</span></button>
+      <button class="btn btn-s" onclick="showScreen('online-screen')" style="border-color:rgba(100,180,255,.5);color:#90D0FF"><span id="b-online">🌐 Jouer en ligne (2 appareils)</span></button>
+      <button class="btn btn-g" onclick="showScreen('rules-screen')"><span id="b-rules">📖 Règles du jeu</span></button>
+      <button class="btn btn-g" onclick="shareApp()" style="border-color:rgba(201,147,58,.35);color:var(--gold-l)"><span id="b-share">🔗 Partager l'application</span></button>
+    </div>
+    <div class="ver">DHAMIÉ v5.1 • Badih wld Salem</div>
+  </div>
+</div>
+
+<!-- SETUP -->
+
+<div id="setup-screen" class="screen">
+  <div class="scard">
+    <div class="sttl" id="s-ttl">Configuration</div>
+    <div id="lf">
+      <div class="fg">
+        <label class="fl" id="l-p1">Joueur 1 🪄 (bâtons dorés — bas)</label>
+        <input class="fi" id="p1n" type="text" placeholder="Joueur 1" autocomplete="off">
+      </div>
+      <div class="fg" id="p2g">
+        <label class="fl" id="l-p2">Joueur 2 🫘 (crottes noires — haut)</label>
+        <input class="fi" id="p2n" type="text" placeholder="Joueur 2" autocomplete="off">
+      </div>
+      <div class="fg" id="ailg" style="display:none">
+        <label class="fl" id="l-ai">Niveau IA</label>
+        <select class="fs" id="ail">
+          <option value="1">Facile</option><option value="2">Moyen</option>
+          <option value="3" selected>Difficile</option><option value="4">Expert</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl" id="l-who">Qui fait la Warda (premier coup) ?</label>
+        <select class="fs" id="whos">
+          <option value="red" id="o-p1">Joueur 1 🪄 (bas)</option>
+          <option value="green" id="o-p2">Joueur 2 🫘 (haut)</option>
+          <option value="random" id="o-rnd">Aléatoire</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl" id="l-time">Temps par joueur</label>
+        <select class="fs" id="tset">
+          <option value="0" id="o-t0">Sans limite</option>
+          <option value="3">3 min</option><option value="5">5 min</option>
+          <option value="10">10 min</option><option value="15">15 min</option>
+        </select>
+      </div>
+    </div>
+    <div class="sacts">
+      <button class="btn btn-g" onclick="showScreen('menu-screen')" id="b-back">← Retour</button>
+      <button class="btn btn-p" onclick="startGame()" id="b-start" style="background:linear-gradient(135deg,#8B6320,#C9933A,#E8B860);color:#130E04">▶ Commencer</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+
+<div id="game-screen" class="screen">
+  <div class="ghdr">
+    <button class="btn btn-g btn-sm" onclick="confirmQuit()" id="b-menu">← Menu</button>
+    <div class="hlogo">ظامِتْ</div>
+    <div class="hbtns">
+      <div id="t1" class="tdisp">—</div>
+      <div id="t2" class="tdisp">—</div>
+      <button class="btn btn-s btn-sm" onclick="toggleSoufla()" id="btn-soufla-game" title="Soufla ON/OFF">⚡ Soufla</button>
+      <button class="btn btn-s btn-sm" onclick="undoMove()" id="b-undo">↩</button>
+      <button class="btn btn-s btn-sm" onclick="showShareModal()">🔗</button>
+      <button class="btn btn-d btn-sm" onclick="confirmRestart()">↺</button>
+    </div>
+  </div>
+  <div class="glayout">
+    <!-- LEFT PANEL -->
+    <div class="sp">
+      <div class="pcard bc" id="p1c">
+        <div class="pnm">
+          <span class="ico-b"><span class="ih"></span><span class="is"></span></span>
+          <span id="p1dn">—</span>
+        </div>
+        <div class="ppc" id="p1pc">Pièces: 40</div>
+        <div class="psul" id="p1sul">Sultans: 0</div>
+        <div class="pturn" id="p1turn">▶ À vous</div>
+      </div>
+      <div class="pcard dc" id="p2c">
+        <div class="pnm">
+          <span class="ico-d"></span>
+          <span id="p2dn">—</span>
+        </div>
+        <div class="ppc" id="p2pc">Pièces: 40</div>
+        <div class="psul" id="p2sul">Sultans: 0</div>
+        <div class="pturn" id="p2turn">▶ À vous</div>
+      </div>
+      <div id="sfb" class="sfb" style="display:none">⚠ Soufla !</div>
+      <div class="sttl2" id="sec-cap">Capturées</div>
+      <div>
+        <div style="font-size:.6rem;color:rgba(255,255,255,.3)" id="cap1l">🪄 a pris :</div>
+        <div class="caps" id="p1cap"></div>
+      </div>
+      <div style="margin-top:4px">
+        <div style="font-size:.6rem;color:rgba(255,255,255,.3)" id="cap2l">🫘 a pris :</div>
+        <div class="caps" id="p2cap"></div>
+      </div>
+    </div>
+
+```
+<!-- BOARD -->
+<div class="ba" id="board-area">
+  <div class="bframe" id="bframe">
+    <div class="binner">
+      <div class="lbltop">
+        <span></span>
+        <span>1</span><span>2</span><span>3</span><span>4</span>
+        <span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+      </div>
+      <div class="bmain">
+        <div class="lblside">
+          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+          <span>F</span><span>G</span><span>H</span><span>I</span>
+        </div>
+        <div class="bgwrap" id="bgwrap">
+          <div class="bginner">
+            <svg id="bsvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            <div id="igrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="sp rp">
+  <div class="sttl2" id="sec-hist">Historique</div>
+  <div class="mhist" id="mhist"></div>
+  <div class="sttl2" style="margin-top:4px">Info</div>
+  <div class="ibox" id="ibox">
+    <b>Morada:</b> E5<br><b>Coins:</b> A1 I1 A9 I9<br>
+    <b>Sultan ★:</b> dernière ligne<br><b>Soufla:</b> pénalité
+  </div>
+</div>
+```
+
+  </div>
+  <div class="sbar">
+    <div class="pbadge" id="pbadge">—</div>
+    <div class="smsg" id="smsg">—</div>
+    <div style="font-size:.66rem;color:rgba(255,255,255,.26)" id="mcnt">0</div>
+  </div>
+</div>
+
+<!-- ONLINE SCREEN -->
+
+<div id="online-screen" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;gap:14px">
+    <div style="font-family:'Amiri',serif;font-size:1.8rem;color:var(--gold);text-align:center" id="on-title">🌐 Jeu en ligne</div>
+    <div style="font-size:.82rem;color:var(--sand);text-align:center;max-width:380px;line-height:1.7" id="on-sub">Jouez avec un ami sur un autre appareil.<br>L'un crée la salle, l'autre rejoint avec le code.</div>
+
+```
+<!-- Tabs -->
+<div style="display:flex;gap:0;border:1.5px solid rgba(201,147,58,.4);border-radius:9px;overflow:hidden;width:100%;max-width:380px">
+  <button id="tab-create" onclick="showOnlineTab('create')"
+    style="flex:1;padding:11px;border:none;background:var(--gold);color:var(--deep);font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer" id="tab-c">
+    <span id="on-create-lbl">➕ Créer une salle</span>
+  </button>
+  <button id="tab-join" onclick="showOnlineTab('join')"
+    style="flex:1;padding:11px;border:none;background:transparent;color:var(--gold-l);font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer">
+    <span id="on-join-lbl">🔗 Rejoindre</span>
+  </button>
+</div>
+
+<!-- Create panel -->
+<div id="panel-create" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px">
+  <div class="fg">
+    <label class="fl" id="on-lbl-name1">Votre nom</label>
+    <input class="fi" id="on-name1" type="text" placeholder="Votre nom" autocomplete="off">
+  </div>
+  <button class="btn btn-p" onclick="onlineCreate()" id="on-btn-create" style="width:100%;font-size:1rem">
+    <span id="on-create-btn-lbl">➕ Créer la salle</span>
+  </button>
+</div>
+
+<!-- Join panel -->
+<div id="panel-join" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;display:none">
+  <div class="fg">
+    <label class="fl" id="on-lbl-name2">Votre nom</label>
+    <input class="fi" id="on-name2" type="text" placeholder="Votre nom" autocomplete="off">
+  </div>
+  <div class="fg">
+    <label class="fl" id="on-lbl-code">Code reçu de votre ami</label>
+    <input class="fi" id="on-code" type="tel" placeholder="Ex: 483920" maxlength="6"
+      style="font-size:2rem;letter-spacing:10px;text-align:center;font-weight:700">
+  </div>
+  <button class="btn btn-p" onclick="onlineJoin()" id="on-btn-join" style="width:100%;font-size:1rem">
+    <span id="on-join-btn-lbl">🔗 Rejoindre la salle</span>
+  </button>
+</div>
+
+<!-- Status -->
+<div id="on-status" style="text-align:center;color:var(--gold-l);font-size:.85rem;min-height:24px;display:none"></div>
+
+<button class="btn btn-g" onclick="showScreen('menu-screen')" id="on-back" style="width:100%;max-width:380px">← Retour</button>
+```
+
+  </div>
+</div>
+
+<!-- RULES -->
+
+<div id="rules-screen" class="screen">
+  <div class="rhdr">
+    <button class="btn btn-g btn-sm" onclick="showScreen('menu-screen')" id="b-rb">← Retour</button>
+    <div class="rtit" id="r-tit">Règles du Dhamié</div>
+  </div>
+  <div id="r-fr">
+    <div class="rsec"><h3>🎯 Aperçu</h3><p>Le <span class="term">Dhamié</span> se joue sur un plateau <b>9×9</b> avec <b>80 pièces</b> (40 par joueur) placées sur les intersections. Tradition : bâtons dorés et crottes de chameau séchées sur sable.</p></div>
+    <div class="rsec"><h3>♟ Pièces</h3><ul>
+      <li><span class="term">Kalb (soldat)</span> : avance en avant (ou diagonale avant si sur ligne diagonale). Capture dans toutes les directions.</li>
+      <li><span class="term">Sultan ★</span> : atteint la dernière ligne adverse → se déplace et capture loin dans toutes les directions.</li></ul></div>
+    <div class="rsec"><h3>⚔️ Règles</h3><ul>
+      <li><span class="term">Warda</span> : premier coup — bâtons: F4→E5 / crottes: D6→E5</li>
+      <li><span class="term">Soufla (optionnelle)</span> : si vous ne capturez pas quand vous pouviez, l'adversaire récupère <b>cette pièce précise</b> comme pénalité</li>
+      <li><span class="term">Capture multiple</span> : continuer si possible</li></ul></div>
+    <div class="rsec"><h3>🏆 Fin</h3><ul>
+      <li><span class="term">Victoire</span> : éliminer toutes les pièces adverses ou les bloquer</li>
+      <li><span class="term">Nul (Koud)</span> : Sultan contre Sultan</li></ul></div>
+  </div>
+  <div id="r-ar" style="display:none">
+    <div class="rsec"><h3>🎯 نظرة عامة</h3><p><span class="term">ظامت</span> رقعة <b>9×9</b> بـ<b>80 قطعة</b> على تقاطعات الخطوط.</p></div>
+    <div class="rsec"><h3>♟ القطع</h3><ul>
+      <li><span class="term">الكلت</span>: يتحرك للأمام، يقتل في كل الاتجاهات</li>
+      <li><span class="term">السلطان ★</span>: يصل الصف الأخير، يتحرك ويقتل بعيداً</li></ul></div>
+    <div class="rsec"><h3>⚔️ القواعد</h3><ul>
+      <li><span class="term">الوردة</span>: الحركة الأولى (D6→E5 أو F4→E5)</li>
+      <li><span class="term">سوفلة</span>: إذا فاتك القتل، يأخذ الخصم القطعة المعنية</li></ul></div>
+    <div class="rsec"><h3>🏆 نهاية اللعبة</h3><ul>
+      <li><span class="term">الغلب</span>: القضاء على قطع الخصم</li>
+      <li><span class="term">الكود</span>: سلطان ضد سلطان</li></ul></div>
+  </div>
+  <div style="text-align:center;margin:16px 0 24px">
+    <button class="btn btn-p" onclick="showScreen('menu-screen')" id="b-rm">← Menu</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+
+<div class="mo" id="mo">
+  <div class="modal">
+    <div class="mi" id="mi">🏆</div>
+    <div class="mt" id="mt"></div>
+    <div class="mx" id="mx"></div>
+    <div class="ma" id="ma"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+// ============================================================
+const BS=9,MC=4,MR=4; // morada = E5
+
+// ============================================================
+// TRANSLATIONS
+// ============================================================
+const TR={
+fr:{
+  sub:'Le jeu mauritanien authentique',
+  bLocal:'♟ Jeu local (2 joueurs)',bAI:"🤖 Contre l'ordinateur",
+  bRules:'📖 Règles du jeu',bShare:"🔗 Partager l'application",bOnline:'🌐 Jouer en ligne',
+  sTtl:'Configuration',
+  lP1:'Joueur 1 🪄 (bâtons dorés — bas)',lP2:'Joueur 2 🫘 (crottes noires — haut)',
+  lAI:'Niveau IA',lWho:'Qui fait la Warda ?',lTime:'Temps par joueur',lSof:'Règle Soufla',
+  oP1:'Joueur 1 🪄 (bas)',oP2:'Joueur 2 🫘 (haut)',oRnd:'Aléatoire',oT0:'Sans limite',
+  e:'Facile',m:'Moyen',h:'Difficile',x:'Expert',
+  bk:'← Retour',st:'▶ Commencer',mn:'← Menu',ud:'↩',
+  sCap:'Capturées',sHist:'Historique',c1:'🪄 a pris :',c2:'🫘 a pris :',
+  rTit:'Règles du Dhamié',
+  p1d:'Joueur 1',p2d:'Joueur 2',ain:'Ordinateur',alv:'niv.',
+  wel:"Bienvenue ! Faites la Warda",
+  yt:'Au tour de',
+  wd:(f)=>`Jouez ${f}→E5`,we:(f)=>`Jouez la pièce ${f} pour la Warda`,
+  mk:'Capture obligatoire !',ch:'Continuez à capturer !',
+  sb:'🌟 Nouveau Sultan !',ae:'Atkatila ! Jeu libre',
+  uo:'Coup annulé',cu:"Rien à annuler",
+  wi:'Victoire !',wt:(n)=>`Bravo <b>${n}</b> ! Victoire.`,
+  to:'Temps écoulé !',tot:(n)=>`Temps de <b>${n}</b> écoulé !`,
+  ng:'Nouvelle partie',bm:'← Menu',
+  qt:'Quitter',qx:'Quitter la partie ?',
+  rt:'Recommencer',rx:'Nouvelle partie ?',
+  yes:'Oui',no:'Non',
+  at:'Atkatila',fl:'Jeu libre',
+  sm:(w,c)=>`Soufla ! ${w} n'a pas capturé — récupérez ${c}`,
+  sb2:'⚠ Soufla ! Choisissez la pièce',so:'Choisissez la pièce indiquée',
+  mc:(n)=>`${n} coups`,pt:'▶ À vous',
+  ib:'<b>Morada:</b> E5<br><b>Coins (Karn):</b> A1 A9 I1 I9<br><b>Sultan ★:</b> dernière ligne<br><b>Soufla:</b> pénalité',
+  shTtl:'Partager',shMsg:'Envoyez ce fichier HTML à vos amis par WhatsApp ou email !',
+  cpOk:'Copié !',cpFail:'Copiez manuellement',wa:'WhatsApp',cl:'Fermer',
+},
+ar:{
+  sub:'الشطرنج الموريتانية الأصيلة',
+  bLocal:'♟ لعب محلي (لاعبان)',bAI:'🤖 ضد الحاسوب',
+  bRules:'📖 قواعد اللعبة',bShare:'🔗 مشاركة التطبيق',bOnline:'🌐 لعب عبر الإنترنت',
+  sTtl:'إعداد اللعبة',
+  lP1:'اللاعب الأول 🪄 (عصي ذهبية — أسفل)',lP2:'اللاعب الثاني 🫘 (براز — أعلى)',
+  lAI:'مستوى الحاسوب',lWho:'من يبدأ بالوردة؟',lTime:'توقيت لكل لاعب',lSof:'قاعدة السوفلة',
+  oP1:'اللاعب الأول 🪄 (أسفل)',oP2:'اللاعب الثاني 🫘 (أعلى)',oRnd:'عشوائي',oT0:'بدون توقيت',
+  e:'سهل',m:'متوسط',h:'صعب',x:'خبير',
+  bk:'← رجوع',st:'▶ ابدأ',mn:'← القائمة',ud:'↩',
+  sCap:'المأخوذة',sHist:'سجل الحركات',c1:'🪄 أخذ:',c2:'🫘 أخذ:',
+  rTit:'قواعد ظامِتْ',
+  p1d:'اللاعب 1',p2d:'اللاعب 2',ain:'الحاسوب',alv:'مستوى',
+  wel:'مرحباً! ابدأ بالوردة',
+  yt:'دور',
+  wd:(f)=>`حرك ${f}→E5`,we:(f)=>`حرك القطعة ${f} للوردة`,
+  mk:'القتل واجب!',ch:'استمر في القتل!',
+  sb:'🌟 ظائم جديد!',ae:'اتكاتيلة! اللعب الحر',
+  uo:'تم التراجع',cu:'لا يمكن التراجع',
+  wi:'الغلب!',wt:(n)=>`مبروك <b>${n}</b>! فاز.`,
+  to:'انتهى الوقت!',tot:(n)=>`انتهى وقت <b>${n}</b>!`,
+  ng:'لعبة جديدة',bm:'← القائمة',
+  qt:'الخروج',qx:'خروج من اللعبة؟',
+  rt:'إعادة',rx:'لعبة جديدة؟',
+  yes:'نعم',no:'لا',
+  at:'اتكاتيلة',fl:'اللعب الحر',
+  sm:(w,c)=>`سوفلة! ${w} لم يقتل — خذ ${c}`,
+  sb2:'⚠ سوفلة! اختر القطعة',so:'اختر القطعة المحددة فقط',
+  mc:(n)=>`${n} نقلة`,pt:'▶ دورك',
+  ib:'<b>الموردة:</b> E5<br><b>الكرون:</b> A1 A9 I1 I9<br><b>السلطان ★</b><br><b>سوفلة:</b> عقوبة',
+  shTtl:'مشاركة',shMsg:'أرسل ملف HTML هذا لأصدقائك عبر واتساب أو البريد الإلكتروني!',
+  cpOk:'تم النسخ!',cpFail:'انسخ يدوياً',wa:'واتساب',cl:'إغلاق',
+}};
+
+let L='fr';
+function t(k,...a){const fn=TR[L][k];return typeof fn==='function'?fn(...a):(fn||k);}
+
+// ============================================================
+// LANGUAGE
+// ============================================================
+function setLang(l){
+  L=l;
+  document.body.lang=l;
+  document.body.dir=l==='ar'?'rtl':'ltr';
+  document.getElementById('lar').classList.toggle('on',l==='ar');
+  document.getElementById('lfr').classList.toggle('on',l==='fr');
+  const u=(id,k)=>{const e=document.getElementById(id);if(e)e.textContent=t(k);};
+  u('gsub','sub');u('b-local','bLocal');u('b-ai','bAI');u('b-online','bOnline');u('b-rules','bRules');u('b-share','bShare');
+  u('s-ttl','sTtl');u('l-p1','lP1');u('l-p2','lP2');u('l-ai','lAI');
+  u('l-who','lWho');u('l-time','lTime');u('l-sof','lSof');
+  u('o-p1','oP1');u('o-p2','oP2');u('o-rnd','oRnd');u('o-t0','oT0');
+  u('b-back','bk');u('b-start','st');u('b-menu','mn');u('b-undo','ud');
+  u('sec-cap','sCap');u('sec-hist','sHist');u('cap1l','c1');u('cap2l','c2');
+  u('r-tit','rTit');u('b-rb','bk');u('b-rm','mn');
+  u('p1turn','pt');u('p2turn','pt');
+  document.getElementById('ibox').innerHTML=t('ib');
+  document.getElementById('r-fr').style.display=l==='fr'?'block':'none';
+  document.getElementById('r-ar').style.display=l==='ar'?'block':'none';
+  document.getElementById('p1n').placeholder=t('p1d');
+  document.getElementById('p2n').placeholder=t('p2d');
+  const al=document.getElementById('ail');
+  if(al){al.options[0].text=t('e');al.options[1].text=t('m');al.options[2].text=t('h');al.options[3].text=t('x');}
+  if(G&&G.board) updateUI();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showSetup(m){
+  gmode=m;
+  document.getElementById('ailg').style.display=m==='ai'?'block':'none';
+  document.getElementById('p2g').style.display=m==='ai'?'none':'block';
+  showScreen('setup-screen');
+}
+
+// ============================================================
+// BOARD SIZING — forces perfect square on all devices
+// ============================================================
+function sizeBoard(){
+  const area=document.getElementById('board-area');
+  const frame=document.getElementById('bframe');
+  const wrap=document.getElementById('bgwrap');
+  if(!area||!frame||!wrap) return;
+
+  // Available space
+  const aw=area.clientWidth;
+  const ah=area.clientHeight;
+
+  // Frame padding + inner padding + label sizes (approx)
+  const overhead=80; // frame(11*2) + inner(13*2) + labels(~20)
+
+  // Max size that fits in both dimensions
+  const maxSize=Math.min(aw, ah)-overhead;
+  const size=Math.max(maxSize, 200);
+
+  // Set frame width (height auto from content)
+  frame.style.width=size+'px';
+
+  // Grid must be a perfect square
+  const gridSize=size-overhead+20; // adjust for exact inner
+  wrap.style.width=gridSize+'px';
+  wrap.style.height=gridSize+'px';
+}
+
+window.addEventListener('resize',sizeBoard);
+window.addEventListener('orientationchange',()=>setTimeout(sizeBoard,200));
+
+
+function drawLines(){
+  const svg=document.getElementById('bsvg');
+  const p=[];
+  for(let i=0;i<9;i++) p.push(((2*i+1)*100/18).toFixed(4));
+  const lc='rgba(55,30,8,.72)',dc='rgba(55,30,8,.5)';
+  let s='';
+  for(let r=0;r<9;r++) s+=`<line x1="${p[0]}" y1="${p[r]}" x2="${p[8]}" y2="${p[r]}" stroke="${lc}" stroke-width=".32"/>`;
+  for(let c=0;c<9;c++) s+=`<line x1="${p[c]}" y1="${p[0]}" x2="${p[c]}" y2="${p[8]}" stroke="${lc}" stroke-width=".32"/>`;
+  for(let br=0;br<8;br+=2) for(let bc=0;bc<8;bc+=2){
+    s+=`<line x1="${p[bc]}" y1="${p[br]}" x2="${p[bc+2]}" y2="${p[br+2]}" stroke="${dc}" stroke-width=".25"/>`;
+    s+=`<line x1="${p[bc+2]}" y1="${p[br]}" x2="${p[bc]}" y2="${p[br+2]}" stroke="${dc}" stroke-width=".25"/>`;
+  }
+  svg.innerHTML=s;
+}
+
+function buildGrid(){
+  const g=document.getElementById('igrid');
+  g.innerHTML='';
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const d=document.createElement('div');
+    d.className='ix'; d.dataset.c=c; d.dataset.r=r;
+    if(r===MR&&c===MC){
+      const m=document.createElement('div');m.className='mrd';m.style.cssText='position:absolute;inset:0';
+      const m2=document.createElement('div');m2.className='mrd2';m2.style.cssText='position:absolute;inset:0';
+      d.appendChild(m);d.appendChild(m2);
+    }
+    d.addEventListener('click',()=>onCell(c,r));
+    g.appendChild(d);
+  }
+}
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let G={}, gmode='local';
+let timerInt=null;
+
+function initBoard(){
+  // RED=bottom(rows5-8+right of row4)=p1=baton
+  // GREEN=top(rows0-3+left of row4)=p2/AI=dung
+  const b=Array.from({length:BS},()=>Array(BS).fill(null));
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    if(r===MR&&c===MC) continue;
+    if(r<4) b[r][c]={t:'green',s:false};
+    else if(r>4) b[r][c]={t:'red',s:false};
+    else{ if(c<4)b[r][c]={t:'green',s:false};else if(c>4)b[r][c]={t:'red',s:false}; }
+  }
+  return b;
+}
+
+function startGame(){
+  const p1=document.getElementById('p1n').value.trim()||t('p1d');
+  const p2=document.getElementById('p2n').value.trim()||t('p2d');
+  const ail=parseInt(document.getElementById('ail').value)||3;
+  let starter=document.getElementById('whos').value;
+  const tmin=parseInt(document.getElementById('tset').value)||0;
+  const sofOn=true; // Soufla always starts ON, can be toggled in-game
+  if(starter==='random') starter=Math.random()<.5?'red':'green';
+  if(timerInt) clearInterval(timerInt);
+  const p2n=gmode==='ai'?`${t('ain')} (${t('alv')}${ail})`:p2;
+  G={
+    board:initBoard(), turn:starter,
+    phase:'atk', atkDone:false,
+    sel:null, valid:[], hist:[],
+    log:[], capR:0, capG:0,
+    p1, p2:p2n, mode:gmode, aiLv:ail,
+    over:false, lastMove:null,
+    soufla:sofOn, sfMode:false, sfOff:null, sfTgt:[],
+    tpp:tmin*60, timers:{red:tmin*60,green:tmin*60}, mc:0,
+  };
+  document.getElementById('p1dn').textContent=G.p1;
+  document.getElementById('p2dn').textContent=G.p2;
+  buildGrid(); drawLines(); renderBoard(); updateUI();
+  showScreen('game-screen');
+  setTimeout(sizeBoard,60);
+  toast(t('wel'));
+  // Update soufla button
+  const sb=document.getElementById('btn-soufla-game');
+  if(sb){sb.style.background=G.soufla?'rgba(255,165,0,.3)':'rgba(255,255,255,.08)';
+    sb.style.borderColor=G.soufla?'rgba(255,165,0,.6)':'rgba(255,255,255,.2)';
+    sb.style.color=G.soufla?'#FFB040':'var(--sand)';}
+  if(tmin>0) startTimer();
+  // AI plays GREEN (top). If AI goes first, trigger it.
+  if(G.mode==='ai'&&G.turn==='green') setTimeout(aiTurn,900);
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer(){
+  if(timerInt) clearInterval(timerInt);
+  timerInt=setInterval(()=>{
+    if(G.over||G.sfMode) return;
+    G.timers[G.turn]--;
+    updTimers();
+    if(G.timers[G.turn]<=0){clearInterval(timerInt);endGame(G.turn==='red'?'green':'red',true);}
+  },1000);
+}
+function updTimers(){
+  const fmt=s=>{s=Math.max(0,s);return`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`};
+  const t1=document.getElementById('t1'),t2=document.getElementById('t2');
+  if(G.tpp>0){
+    t1.textContent=fmt(G.timers.red); t2.textContent=fmt(G.timers.green);
+    t1.classList.toggle('low',G.timers.red<=30&&G.turn==='red');
+    t2.classList.toggle('low',G.timers.green<=30&&G.turn==='green');
+  } else {t1.textContent='—';t2.textContent='—';}
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderBoard(){
+  const cells=document.querySelectorAll('.ix');
+  cells.forEach(cell=>{
+    const c=+cell.dataset.c, r=+cell.dataset.r;
+    cell.classList.remove('sel','vm','hp','lm','sf');
+    if(G.lastMove){
+      if((G.lastMove.fc===c&&G.lastMove.fr===r)||(G.lastMove.tc===c&&G.lastMove.tr===r))
+        cell.classList.add('lm');
+    }
+    if(G.sel&&G.sel.c===c&&G.sel.r===r) cell.classList.add('sel');
+    if(G.valid.some(m=>m.c===c&&m.r===r)){
+      cell.classList.add('vm');
+      if(G.board[r][c]) cell.classList.add('hp');
+    }
+    if(G.sfMode&&G.sfTgt.some(s=>s.c===c&&s.r===r)) cell.classList.add('sf');
+    // Remove old pieces
+    cell.querySelectorAll('.piece-baton,.piece-dung').forEach(p=>p.remove());
+    // Add piece
+    const p=G.board[r][c];
+    if(p) cell.appendChild(makePiece(p,c,r));
+  });
+}
+
+function makePiece(p,c,r){
+  const isBaton=p.t==='red';
+  const isSel=G.sel&&G.sel.c===c&&G.sel.r===r;
+  const el=document.createElement('div');
+  el.className=(isBaton?'piece-baton':'piece-dung')+(isSel?' sel':'');
+  const k=`${c}${r}`;
+
+  if(isBaton){
+    // Wooden baton: fits entirely within viewBox, no overflow
+    el.innerHTML=`<svg viewBox="0 0 36 80" xmlns="http://www.w3.org/2000/svg"
+      style="width:100%;height:100%;display:block;overflow:hidden">
+      <defs>
+        <linearGradient id="wg${k}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#E8C060"/>
+          <stop offset="45%" stop-color="#C08820"/>
+          <stop offset="100%" stop-color="#7A5010"/>
+        </linearGradient>
+        <linearGradient id="ws${k}" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#9A6818"/>
+          <stop offset="50%" stop-color="#C89228"/>
+          <stop offset="100%" stop-color="#8A5810"/>
+        </linearGradient>
+      </defs>
+      <!-- Stick -->
+      <rect x="15" y="32" width="6" height="42" rx="3" fill="url(#ws${k})"/>
+      <!-- Head -->
+      <ellipse cx="18" cy="20" rx="14" ry="17" fill="url(#wg${k})"/>
+      <!-- Highlight -->
+      <ellipse cx="12" cy="12" rx="5" ry="7" fill="rgba(255,255,255,.25)" transform="rotate(-15,12,12)"/>
+      <!-- Wood grain -->
+      <line x1="11" y1="30" x2="9" y2="68" stroke="rgba(0,0,0,.08)" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="23" y1="29" x2="25" y2="67" stroke="rgba(255,255,255,.12)" stroke-width="1" stroke-linecap="round"/>
+      ${p.s?`<text x="18" y="24" text-anchor="middle" font-size="9" fill="#FFD700" font-family="serif" font-weight="bold">★</text>`:''}
+    </svg>`;
+  } else {
+    // Compact dung: more round, less elongated — like the book photo
+    el.innerHTML=`<svg viewBox="0 0 36 46" xmlns="http://www.w3.org/2000/svg"
+      style="width:100%;height:100%;display:block;overflow:hidden">
+      <defs>
+        <radialGradient id="dg${k}" cx="36%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#6B3E1E"/>
+          <stop offset="55%" stop-color="#2E1508"/>
+          <stop offset="100%" stop-color="#150903"/>
+        </radialGradient>
+      </defs>
+      <!-- Compact teardrop: wide top circle + short pointed bottom -->
+      <path d="M18,3 C27,3 33,9 33,18 C33,28 26,38 18,43 C10,38 3,28 3,18 C3,9 9,3 18,3Z"
+        fill="url(#dg${k})"/>
+      <!-- Highlight -->
+      <ellipse cx="12" cy="13" rx="4" ry="5" fill="rgba(255,255,255,.2)" transform="rotate(-20,12,13)"/>
+      ${p.s?`<text x="18" y="25" text-anchor="middle" font-size="9" fill="#FFD700" font-family="serif" font-weight="bold">★</text>`:''}
+    </svg>`;
+  }
+  return el;
+}
+
+// ============================================================
+// UI
+// ============================================================
+function updateUI(){
+  let rc=0,gc=0,rs=0,gs=0;
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=G.board[r][c];if(!p) continue;
+    p.t==='red'?(rc++,p.s&&rs++):( gc++,p.s&&gs++);
+  }
+  document.getElementById('p1pc').textContent=(L==='ar'?'القطع:':'Pièces:')+' '+rc;
+  document.getElementById('p2pc').textContent=(L==='ar'?'القطع:':'Pièces:')+' '+gc;
+  document.getElementById('p1sul').textContent=(L==='ar'?'السلاطين:':'Sultans:')+' '+rs;
+  document.getElementById('p2sul').textContent=(L==='ar'?'السلاطين:':'Sultans:')+' '+gs;
+  document.getElementById('p1turn').textContent=t('pt');
+  document.getElementById('p2turn').textContent=t('pt');
+  updCap('p1cap',G.capR,'dung');
+  updCap('p2cap',G.capG,'baton');
+  document.getElementById('p1c').classList.toggle('on',G.turn==='red'&&!G.over);
+  document.getElementById('p2c').classList.toggle('on',G.turn==='green'&&!G.over);
+  document.getElementById('pbadge').textContent=G.phase==='atk'?t('at'):t('fl');
+  document.getElementById('mcnt').textContent=t('mc',G.mc);
+  document.getElementById('sfb').style.display=G.sfMode?'block':'none';
+  if(!G.over&&!G.sfMode){
+    const nm=G.turn==='red'?G.p1:G.p2;
+    let msg=`${t('yt')} ${nm}`;
+    if(G.phase==='atk'){
+      const wf=G.turn==='red'?'D6':'F4';
+      msg=`${nm} — ${t('wd',wf)}`;
+    }
+    document.getElementById('smsg').textContent=msg;
+    document.getElementById('smsg').className='smsg';
+  }
+  updTimers();
+  const h=document.getElementById('mhist');
+  const recent=G.log.slice(-28);
+  h.innerHTML=recent.map((m,i)=>{const n=G.log.length-recent.length+i+1;return`<div class="me"><span class="mn">${n}.</span>${m}</div>`;}).join('');
+  h.scrollTop=h.scrollHeight;
+}
+
+function updCap(id,count,type){
+  const el=document.getElementById(id); el.innerHTML='';
+  for(let i=0;i<Math.min(count,40);i++){
+    if(type==='dung'){
+      const d=document.createElement('span');d.className='cd';el.appendChild(d);
+    } else {
+      const b=document.createElement('span');b.className='cb';
+      const bh=document.createElement('span');bh.className='ch';
+      const bs2=document.createElement('span');bs2.className='cs';
+      b.appendChild(bh);b.appendChild(bs2);el.appendChild(b);
+    }
+  }
+}
+
+// ============================================================
+// CELL CLICK
+// ============================================================
+function onCell(c,r){
+  if(G.over) return;
+  if(G.sfMode){
+    if(G.mode==='ai'&&G.turn==='green') return;
+    // In online mode: only defender can click
+    if(G.mode==='online'&&G.turn!==OL.myColor) return;
+    handleSouflaClick(c,r); return;
+  }
+  if(G.mode==='ai'&&G.turn==='green') return;
+  // In online: block if not my turn
+  if(G.mode==='online'&&G.turn!==OL.myColor){
+    toast(L==='ar'?'انتظر دور خصمك':'Attendez votre tour',1200); return;
+  }
+  if(G.phase==='atk') handleWarda(c,r);
+  else handlePlay(c,r);
+}
+
+// ============================================================
+// WARDA
+// ============================================================
+function handleWarda(c,r){
+  // New coordinate system: letters=rows(A-I top-bottom), numbers=cols(1-9 left-right)
+  // RED(bottom,p1): warda from F4={c:3,r:5} → E5={c:4,r:4}
+  // GREEN(top,p2/AI): warda from D6={c:5,r:3} → E5={c:4,r:4}
+  const wf=G.turn==='red'?{c:3,r:5}:{c:5,r:3};
+  const wt={c:MC,r:MR}; // E5
+  const p=G.board[r][c];
+  if(G.sel&&c===wt.c&&r===wt.r){doMove(G.sel,wt);return;}
+  if(p&&p.t===G.turn){
+    if(c===wf.c&&r===wf.r){G.sel={c,r};G.valid=[wt];}
+    else toast(t('we',cn(wf)),1700);
+    renderBoard();return;
+  }
+  G.sel=null;G.valid=[];renderBoard();
+}
+
+// ============================================================
+// FREE PLAY — click handler
+// ============================================================
+function handlePlay(c,r){
+  const p=G.board[r][c];
+  if(G.sel&&G.valid.some(m=>m.c===c&&m.r===r)){
+    doMove(G.sel,G.valid.find(m=>m.c===c&&m.r===r));return;
+  }
+  if(p&&p.t===G.turn){
+    if(G.chainPiece&&!(c===G.chainPiece.c&&r===G.chainPiece.r)&&G.soufla){
+      const fp={c:G.chainPiece.c,r:G.chainPiece.r};
+      G.sel=null;G.valid=[];G.chainPiece=null;
+      if(G.board[fp.r][fp.c]){triggerSoufla(G.turn,[fp]);return;}
+    }
+    G.sel={c,r};
+    // ALWAYS show all moves — never block, no assistance
+    G.valid=[...pieceKills(c,r,p),...pieceMoves(c,r,p)];
+    renderBoard();updateUI();return;
+  }
+  if(G.chainPiece&&G.soufla){
+    const fp={c:G.chainPiece.c,r:G.chainPiece.r};
+    G.sel=null;G.valid=[];G.chainPiece=null;
+    if(G.board[fp.r][fp.c]){triggerSoufla(G.turn,[fp]);return;}
+  }
+  G.sel=null;G.valid=[];renderBoard();
+}
+
+// ============================================================
+// SAVE STATE FOR UNDO
+// ============================================================
+function saveState(){
+  G.hist.push(JSON.parse(JSON.stringify({
+    board:G.board, turn:G.turn, phase:G.phase, atkDone:G.atkDone,
+    capR:G.capR, capG:G.capG, log:[...G.log], lastMove:G.lastMove,
+    mc:G.mc, timers:{...G.timers},
+    sfMode:G.sfMode, sfOff:G.sfOff, sfTgt:[...G.sfTgt],
+    chainPiece:G.chainPiece||null,
+  })));
+}
+
+// ============================================================
+// EXECUTE MOVE — the heart of the game
+// ============================================================
+function doMove(from, to){
+  // ---- Snapshot BEFORE the move ----
+  // For each piece of current player, count how many total captures it can do (including chains)
+  const killMap = buildKillMap(G.turn); // {key → maxChainLength}
+
+  saveState();
+  const cap = to.cap||null;
+  execMove(from, to, cap);
+  const p = G.board[to.r][to.c];
+
+  // Sultan promotion
+  if(p&&!p.s&&((p.t==='red'&&to.r===0)||(p.t==='green'&&to.r===BS-1))){
+    p.s=true; toast(t('sb'),2000); flashCell(to.c,to.r,'rgba(255,215,0,.5)');
+  }
+  G.lastMove={fc:from.c, fr:from.r, tc:to.c, tr:to.r};
+  G.log.push(cn(from)+'→'+cn(to)+(cap?'×'+cn(cap):''));
+  G.mc++;
+  if(G.phase==='atk'){G.phase='play'; G.atkDone=true; toast(t('ae'),1700);}
+  G.sel=null; G.valid=[];
+
+  // ---- CHAIN CAPTURE: more kills available after this capture ----
+  if(cap && G.phase==='play'){
+    const more = pieceKills(to.c, to.r, p);
+    if(more.length>0){
+      G.sel={c:to.c, r:to.r};
+      G.valid=more;
+      G.chainPiece={c:to.c, r:to.r};
+      renderBoard(); updateUI(); toast(t('ch'),1200);
+      if(G.mode==='ai'&&G.turn==='green'){
+        setTimeout(()=>{
+          if(G.chainPiece&&G.valid.length>0)
+            doMove({c:G.chainPiece.c,r:G.chainPiece.r}, G.valid[Math.floor(Math.random()*G.valid.length)]);
+        },520);
+      }
+      return; // don't switch turn yet
+    }
+  }
+
+  // ---- SOUFLA CHECK ----
+  if(G.soufla&&G.phase==='play'){
+    const faultyPos = checkSoufla(from, to, cap, killMap);
+    if(faultyPos){
+      G.chainPiece=null;
+      triggerSoufla(G.turn, faultyPos);
+      return;
+    }
+  }
+
+  G.chainPiece=null;
+  switchTurn();
+}
+
+// ============================================================
+// SOUFLA DETECTION — clean logic
+// ============================================================
+// Build a map: for each piece that has kills, how many total captures
+// can it achieve in the best chain? key = "c,r"
+function buildKillMap(color){
+  const map={};
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=G.board[r][c];
+    if(p&&p.t===color){
+      const kills=pieceKills(c,r,p);
+      if(kills.length>0){
+        // Count max chain length from this piece
+        map[c+','+r]=maxChainKills(G.board,c,r,p,0);
+      }
+    }
+  }
+  return map;
+}
+
+// Count the maximum number of captures in the best chain from (c,r)
+function maxChainKills(board,c,r,p,depth){
+  if(depth>8) return 0; // prevent infinite recursion
+  const kills=pieceKillsOnBoard(board,c,r,p);
+  if(!kills.length) return 0;
+  let best=0;
+  for(const k of kills){
+    const nb=board.map(row=>[...row]);
+    const pp=nb[r][c]; nb[k.r][k.c]=pp; nb[r][c]=null;
+    if(k.cap) nb[k.cap.r][k.cap.c]=null;
+    const chain=maxChainKills(nb,k.c,k.r,pp,depth+1);
+    best=Math.max(best,1+chain);
+  }
+  return best;
+}
+
+// pieceKills but works on any board (not G.board)
+function pieceKillsOnBoard(board,c,r,p){
+  const mv=[],opp=p.t==='red'?'green':'red';
+  for(const [dr,dc] of allDirs(c,r)){
+    if(p.s){
+      let nr=r+dr,nc=c+dc;
+      while(nr>=0&&nr<BS&&nc>=0&&nc<BS){
+        const tt=board[nr][nc];
+        if(tt){if(tt.t===opp){let lr=nr+dr,lc=nc+dc;while(lr>=0&&lr<BS&&lc>=0&&lc<BS&&!board[lr][lc]){mv.push({c:lc,r:lr,cap:{c:nc,r:nr}});lr+=dr;lc+=dc;}}break;}
+        nr+=dr;nc+=dc;
+      }
+    } else {
+      const mr=r+dr,mc2=c+dc,lr=r+2*dr,lc=c+2*dc;
+      if(mr>=0&&mr<BS&&mc2>=0&&mc2<BS&&lr>=0&&lr<BS&&lc>=0&&lc<BS)
+        if(board[mr][mc2]&&board[mr][mc2].t===opp&&!board[lr][lc])
+          mv.push({c:lc,r:lr,cap:{c:mc2,r:mr}});
+    }
+  }
+  return mv;
+}
+
+// Returns array of faulty piece positions, or null if no soufla
+function checkSoufla(from, to, cap, killMap){
+  if(!Object.keys(killMap).length) return null; // no kills were available
+
+  // Find the maximum chain length available to any piece before the move
+  let globalMax=0;
+  for(const v of Object.values(killMap)) if(v>globalMax) globalMax=v;
+
+  // How many captures did the moving piece actually achieve in this move?
+  // (cap=1 capture this move; chain is offered separately)
+  const actualCaps = cap ? 1 : 0;
+
+  // The moving piece's max chain before the move
+  const movingKey=from.c+','+from.r;
+  const movingMax=killMap[movingKey]||0;
+
+  const faulty=[];
+
+  // CASE 1: No capture made, but kills were available
+  if(!cap){
+    for(const [key,val] of Object.entries(killMap)){
+      const [kc,kr]=key.split(',').map(Number);
+      // The piece that moved is now at `to`
+      const curC=(kc===from.c&&kr===from.r)?to.c:kc;
+      const curR=(kc===from.c&&kr===from.r)?to.r:kr;
+      if(G.board[curR]&&G.board[curR][curC]&&
+         !faulty.some(x=>x.c===curC&&x.r===curR))
+        faulty.push({c:curC,r:curR});
+    }
+    return faulty.length?faulty:null;
+  }
+
+  // CASE 2: Capture made, but another piece had MORE captures available
+  // The ignored piece (with more kills) is penalized
+  if(cap){
+    for(const [key,val] of Object.entries(killMap)){
+      const [kc,kr]=key.split(',').map(Number);
+      if(kc===from.c&&kr===from.r) continue; // skip the piece that moved
+      if(val>movingMax){
+        // This piece had more capture potential and was ignored
+        if(G.board[kr]&&G.board[kr][kc]&&!faulty.some(x=>x.c===kc&&x.r===kr))
+          faulty.push({c:kc,r:kr});
+      }
+    }
+    return faulty.length?faulty:null;
+  }
+
+  return null;
+}
+
+function execMove(from,to,cap){
+  const p=G.board[from.r][from.c];
+  G.board[to.r][to.c]=p; G.board[from.r][from.c]=null;
+  if(cap){
+    G.board[cap.r][cap.c]=null;
+    p.t==='red'?G.capR++:G.capG++;
+    flashCell(cap.c,cap.r,'rgba(255,80,80,.55)');
+  }
+  // Send move to opponent if online and it's our turn
+  if(G.mode==='online'&&OL.active&&G.turn===OL.myColor){
+    pushOnlineMove(from,to);
+  }
+}
+
+function switchTurn(){
+  G.turn=G.turn==='red'?'green':'red';
+  renderBoard(); updateUI(); checkOver();
+  if(!G.over&&G.mode==='ai'&&G.turn==='green')
+    setTimeout(aiTurn, 480+Math.random()*350);
+}
+
+// ============================================================
+// SOUFLA TRIGGER & CLICK
+// ============================================================
+function triggerSoufla(offender, faultyPieces){
+  G.sfMode=true; G.sfOff=offender; G.sfTgt=[...faultyPieces];
+  G.turn=offender==='red'?'green':'red'; // defender picks the penalty piece
+
+  const offName=offender==='red'?G.p1:G.p2;
+  const defName=offender==='red'?G.p2:G.p1;
+  const names=faultyPieces.map(x=>cn(x)).join(', ');
+
+  // Message: show ALL choices to the defender
+  let msgFr, msgAr, banFr, banAr;
+  if(faultyPieces.length===1){
+    msgFr=`Soufla ! ${offName} n'a pas bien capturé — ${defName}, retirez ${names}`;
+    msgAr=`سوفلة! ${offName} لم يقتل جيداً — ${defName}، خذ ${names}`;
+    banFr=`⚠ Soufla ! ${defName} : cliquez sur ${names} pour la retirer`;
+    banAr=`⚠ سوفلة! ${defName}: انقر على ${names}`;
+  } else {
+    msgFr=`Soufla ! ${offName} n'a pas bien capturé — ${defName}, choisissez une pièce à retirer parmi : ${names}`;
+    msgAr=`سوفلة! ${offName} لم يقتل جيداً — ${defName}، اختر قطعة للأخذ من: ${names}`;
+    banFr=`⚠ Soufla ! ${defName} : choisissez une pièce parmi ${names}`;
+    banAr=`⚠ سوفلة! ${defName}: اختر من ${names}`;
+  }
+
+  document.getElementById('smsg').textContent=L==='ar'?msgAr:msgFr;
+  document.getElementById('smsg').className='smsg sof';
+  document.getElementById('sfb').textContent=L==='ar'?banAr:banFr;
+  document.getElementById('sfb').style.display='block';
+
+  renderBoard(); updateUI();
+
+  // AI picks the BEST piece to remove (most advanced / most dangerous enemy piece)
+  if(G.mode==='ai'&&G.turn==='green'){
+    setTimeout(()=>{
+      if(G.sfTgt.length>0){
+        // AI picks the faulty piece that is most advanced (closest to promotion)
+        // red pieces: lower row = more advanced; pick the one with smallest r
+        const best=G.sfTgt.reduce((a,b)=>{
+          const advA=a.r; // red advances upward (lower row = more advanced)
+          const advB=b.r;
+          return advA<advB?a:b;
+        });
+        handleSouflaClick(best.c, best.r);
+      }
+    },700);
+  }
+}
+
+function handleSouflaClick(c,r){
+  if(!G.sfTgt.some(s=>s.c===c&&s.r===r)){
+    // If multiple choices, tell them to click one of the highlighted pieces
+    const names=G.sfTgt.map(x=>cn(x)).join(', ');
+    const msg=G.sfTgt.length>1
+      ?(L==='ar'?`اختر إحدى القطع: ${names}`:`Choisissez une pièce parmi : ${names}`)
+      :(L==='ar'?'اختر القطعة المحددة':'Cliquez sur la pièce indiquée');
+    toast(msg, 2000);
+    return;
+  }
+  flashCell(c,r,'rgba(255,80,80,.6)');
+  setTimeout(()=>{
+    const p=G.board[r][c];
+    if(p){
+      G.board[r][c]=null;
+      // Defender gets the captured piece credit
+      if(G.sfOff==='red') G.capG++; // red offended → green (defender) gets it
+      else G.capR++;                 // green offended → red (defender) gets it
+    }
+    const wasOff=G.sfOff;
+    G.sfMode=false; G.sfOff=null; G.sfTgt=[];
+    document.getElementById('sfb').style.display='none';
+    // After soufla: the DEFENDER plays next (G.turn already set in triggerSoufla)
+    renderBoard(); updateUI(); checkOver();
+    if(!G.over&&G.mode==='ai'&&G.turn==='green') setTimeout(aiTurn,500);
+  },380);
+}
+
+// ============================================================
+// MOVEMENT
+// ============================================================
+function onDiag(c,r){return c%2===r%2;}
+function diagDirs(c,r){return onDiag(c,r)?[[1,1],[1,-1],[-1,1],[-1,-1]]:[];}
+function allDirs(c,r){return[[0,1],[0,-1],[1,0],[-1,0],...diagDirs(c,r)];}
+function fwdDirs(c,r,p){
+  // RED(bottom) moves UP (row-1), GREEN(top) moves DOWN (row+1)
+  const f=p.t==='red'?-1:1;
+  return[[f,0],...(onDiag(c,r)?[[f,1],[f,-1]]:[])];
+}
+
+function pieceMoves(c,r,p){
+  const mv=[],dirs=p.s?allDirs(c,r):fwdDirs(c,r,p);
+  for(const [dr,dc] of dirs){
+    if(p.s){let nr=r+dr,nc=c+dc;while(nr>=0&&nr<BS&&nc>=0&&nc<BS){if(G.board[nr][nc])break;mv.push({c:nc,r:nr});nr+=dr;nc+=dc;}}
+    else{const nr=r+dr,nc=c+dc;if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&!G.board[nr][nc])mv.push({c:nc,r:nr});}
+  }
+  return mv;
+}
+
+function pieceKills(c,r,p){
+  const mv=[],opp=p.t==='red'?'green':'red';
+  for(const [dr,dc] of allDirs(c,r)){
+    if(p.s){
+      let nr=r+dr,nc=c+dc;
+      while(nr>=0&&nr<BS&&nc>=0&&nc<BS){
+        const tt=G.board[nr][nc];
+        if(tt){if(tt.t===opp){let lr=nr+dr,lc=nc+dc;while(lr>=0&&lr<BS&&lc>=0&&lc<BS&&!G.board[lr][lc]){mv.push({c:lc,r:lr,cap:{c:nc,r:nr}});lr+=dr;lc+=dc;}}break;}
+        nr+=dr;nc+=dc;
+      }
+    } else {
+      const mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc;
+      if(mr>=0&&mr<BS&&mc>=0&&mc<BS&&lr>=0&&lr<BS&&lc>=0&&lc<BS)
+        if(G.board[mr][mc]&&G.board[mr][mc].t===opp&&!G.board[lr][lc])
+          mv.push({c:lc,r:lr,cap:{c:mc,r:mr}});
+    }
+  }
+  return mv;
+}
+
+function allKills(color){
+  const res=[];
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=G.board[r][c];
+    if(p&&p.t===color){const k=pieceKills(c,r,p);if(k.length>0) res.push({from:{c,r},moves:k});}
+  }
+  return res;
+}
+
+// ============================================================
+// GAME OVER
+// ============================================================
+function checkOver(){
+  let rc=0,gc=0;
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){const p=G.board[r][c];if(p)p.t==='red'?rc++:gc++;}
+  if(rc===0){endGame('green');return;}
+  if(gc===0){endGame('red');return;}
+  const ak=allKills(G.turn);
+  if(ak.length>0) return;
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=G.board[r][c];
+    if(p&&p.t===G.turn&&pieceMoves(c,r,p).length>0) return;
+  }
+  endGame(G.turn==='red'?'green':'red');
+}
+
+function endGame(w,byTime=false){
+  G.over=true;if(timerInt)clearInterval(timerInt);
+  const wn=w==='red'?G.p1:G.p2;
+  showModal(byTime?'⏰':'🏆',
+    byTime?t('to'):t('wi'),
+    byTime?t('tot',wn):t('wt',wn),
+    [{tx:t('ng'),c:'btn-p',fn:'startGame()'},
+     {tx:t('bm'),c:'btn-g',fn:"showScreen('menu-screen')"}]);
+  document.getElementById('smsg').textContent=`🏆 ${wn}`;
+  document.getElementById('smsg').className='smsg suc';
+}
+
+// ============================================================
+// UNDO
+// ============================================================
+function undoMove(){
+  if(G.hist.length===0){toast(t('cu'),1400);return;}
+  // In AI mode: undo 2 moves (AI's move + human's move) so human can play again
+  // But only if there are enough history states
+  if(G.mode==='ai'){
+    // Undo until it's the human's (red) turn
+    let undone=0;
+    while(G.hist.length>0&&undone<2){
+      const prev=G.hist.pop();
+      Object.assign(G,prev);
+      G.board=prev.board.map(row=>row.map(p=>p?{...p}:null));
+      G.timers={...prev.timers};
+      G.sfTgt=[...(prev.sfTgt||[])];
+      undone++;
+      // Stop as soon as we reach a state where it's the human's turn
+      if(G.turn==='red') break;
+    }
+    // If we ended up on AI's turn still (edge case), undo one more
+    if(G.turn==='green'&&G.hist.length>0){
+      const prev=G.hist.pop();
+      Object.assign(G,prev);
+      G.board=prev.board.map(row=>row.map(p=>p?{...p}:null));
+      G.timers={...prev.timers};
+      G.sfTgt=[...(prev.sfTgt||[])];
+    }
+  } else {
+    // Local: undo exactly 1 move
+    const prev=G.hist.pop();
+    Object.assign(G,prev);
+    G.board=prev.board.map(row=>row.map(p=>p?{...p}:null));
+    G.timers={...prev.timers};
+    G.sfTgt=[...(prev.sfTgt||[])];
+  }
+  G.sel=null; G.valid=[]; G.over=false;
+  G.sfMode=false; G.sfOff=null; G.sfTgt=[]; G.chainPiece=null;
+  document.getElementById('sfb').style.display='none';
+  renderBoard(); updateUI(); toast(t('uo'));
+  // After undo, if it's now AI's turn (shouldn't happen normally, but just in case)
+  // Don't auto-trigger AI — human should always have the hand after undo
+}
+
+// ============================================================
+// AI — Book openings + Iterative Deepening Negamax Alpha-Beta
+// AI = GREEN (top), Human = RED (bottom)
+// Based on Badih wld Salem rulebook (2020), pages 23-34
+// ============================================================
+
+// ======================
+// OPENING BOOK (Atkatila)
+// From the rulebook: Katla courte = 17 moves, precise sequence
+// Coordinates: letter=row(A-I), number=col(1-9)
+// AI is GREEN (top, rows 0-3). Internal: {c=col-1, r=rowIndex}
+// GREEN moves: F4→E5(warda done by game), then responses
+// ======================
+// The Katla Courte sequence (book pages 23-28):
+// Step 1: Warda F4→E5 (green) already done by game
+// Step 2: D6 kills E5 (red kills warda) → lands F4
+// Step 3: G3 advance (green)
+// Step 4: F4 kills F2 (red)
+// Step 5: G3 kills G1... etc.
+// We encode as: for each move number, what GREEN plays
+// move numbers are alternating: odd=green, even=red in atkatila context
+// After warda: green plays move 3,5,7,9,11,13,15,17 of katla
+
+// Atkatila opening book for GREEN (AI):
+// Key = moveCount (G.mc), value = {from, to} in internal coords
+// Coordinate conversion: col letter A=0..I=8 → r; number 1-9 → c=n-1
+// Book move notation uses book coords (letter+number), we convert here
+function bookCoord(letter, num){ 
+  return {r:'ABCDEFGHI'.indexOf(letter), c:num-1}; 
+}
+
+// Katla courte - GREEN's moves (steps 3,5,7,9,11,13,15,17 = mc 2,4,6,8,10,12,14,16)
+const KATLA_COURTE_GREEN = {
+  2: {from:bookCoord('G',3), to:bookCoord('F',3)},   // step3: G3 advance
+  4: {from:bookCoord('G',3), to:bookCoord('H',2)},   // step5: G3→H2 area
+  6: {from:bookCoord('E',3), to:bookCoord('E',4)},   // step7: E3 advance
+  8: {from:bookCoord('E',5), to:bookCoord('E',6)},   // step9: center push
+  10:{from:bookCoord('D',4), to:bookCoord('D',5)},   // step11: D4→D5 kill
+  12:{from:bookCoord('D',5), to:bookCoord('C',5)},   // step13: push
+  14:{from:bookCoord('F',3), to:bookCoord('F',4)},   // step15: flank
+  16:{from:bookCoord('F',6), to:bookCoord('F',7)},   // step17: advance
+};
+
+// Post-atkatila strategy: Tawyiba (most popular among experts)
+// D7 tukdima to be killed by F8, then D3 tukdima killed by F3, then D2 kills D4+D6
+const TAWYIBA = [
+  {from:bookCoord('D',7), to:bookCoord('D',6)},
+  {from:bookCoord('D',3), to:bookCoord('D',4)},
+  {from:bookCoord('D',2), to:bookCoord('D',3)},
+];
+
+let aiBookStep = 0;
+
+// Time limits per level (ms)
+const AI_TIME = [0, 300, 800, 1800, 3500];
+let aiStartTime = 0;
+let aiTimeLimit = 1000;
+
+function aiTurn(){
+  if(G.over || G.turn !== 'green') return;
+
+  // Warda
+  if(G.phase === 'atk'){
+    const wf = {c:5, r:3}; // D6 in new coords = green's warda piece
+    if(G.board[wf.r] && G.board[wf.r][wf.c] && G.board[wf.r][wf.c].t === 'green'){
+      doMove(wf, {c:MC, r:MR}); return;
+    }
+    return;
+  }
+
+  // Try opening book first (Atkatila sequence)
+  if(G.mc <= 20 && G.aiLv >= 2){
+    const bookMv = getBookMove();
+    if(bookMv){
+      const p = G.board[bookMv.from.r][bookMv.from.c];
+      // Only use if piece exists, is green, and move destination is valid
+      if(p && p.t === 'green'){
+        const validMoves = [...pieceKills(bookMv.from.c,bookMv.from.r,p), 
+                           ...pieceMoves(bookMv.from.c,bookMv.from.r,p)];
+        if(validMoves.some(m=>m.c===bookMv.to.c&&m.r===bookMv.to.r)){
+          doMove(bookMv.from, bookMv.to); return;
+        }
+      }
+    }
+  }
+
+  // Level 1: random
+  if(G.aiLv === 1){
+    const mvs = getMvs(G.board, 'green');
+    if(mvs.length) doMove(mvs[Math.floor(Math.random()*mvs.length)].from,
+                          mvs[Math.floor(Math.random()*mvs.length)].to);
+    return;
+  }
+
+  aiStartTime = Date.now();
+  aiTimeLimit = AI_TIME[Math.min(G.aiLv, 4)];
+
+  // Iterative deepening
+  const maxDepth = [0,0,3,5,7][Math.min(G.aiLv,4)];
+  let bestMove = null;
+
+  for(let depth = 1; depth <= maxDepth; depth++){
+    if(Date.now() - aiStartTime > aiTimeLimit * 0.7) break;
+    const result = rootSearch(G.board, 'green', depth);
+    if(result) bestMove = result;
+    if(Date.now() - aiStartTime > aiTimeLimit) break;
+  }
+
+  if(bestMove) doMove(bestMove.from, bestMove.to);
+}
+
+function getBookMove(){
+  // Check if we have a book move for current move count
+  const mv = KATLA_COURTE_GREEN[G.mc];
+  if(mv) return mv;
+  // Post-atkatila Tawyiba if mc in range 17-22
+  if(G.mc >= 17 && G.mc <= 22){
+    const step = G.mc - 17;
+    if(step < TAWYIBA.length) return TAWYIBA[step];
+  }
+  return null;
+}
+
+function rootSearch(board, col, depth){
+  const mvs = getMvs(board, col);
+  if(!mvs.length) return null;
+  mvs.sort((a,b) => mvHeuristic(board,b,col) - mvHeuristic(board,a,col));
+  let best=null, bestS=-999999, alpha=-999999, beta=999999;
+  for(const mv of mvs){
+    if(Date.now()-aiStartTime > aiTimeLimit) break;
+    const nb = cloneB(board);
+    applyB(nb, mv.from, mv.to);
+    const s = -abNega(nb, col==='red'?'green':'red', depth-1, -beta, -alpha, col==='red'?'green':'red');
+    if(s > bestS){ bestS=s; best=mv; }
+    if(s > alpha) alpha=s;
+    if(beta <= alpha) break;
+  }
+  return best;
+}
+
+function abNega(board, col, depth, alpha, beta, myCol){
+  if(Date.now()-aiStartTime > aiTimeLimit) return evalBoard(board, myCol);
+  const mvs = getMvs(board, col);
+  if(!mvs.length) return col===myCol ? -90000 : 90000;
+  if(depth <= 0) return quiescence(board, col, 4, alpha, beta, myCol);
+  mvs.sort((a,b) => mvHeuristic(board,b,col) - mvHeuristic(board,a,col));
+  const sign = col===myCol ? 1 : -1;
+  let best = -999999;
+  for(const mv of mvs){
+    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
+    // Handle chain captures (same player keeps going)
+    const p=nb[mv.to.r][mv.to.c];
+    let s;
+    if(mv.to.cap && p && getKillsB(nb,mv.to.c,mv.to.r,p).length>0){
+      s = sign * chainSearch(nb,mv.to.c,mv.to.r,depth,alpha,beta,myCol,col);
+    } else {
+      const opp = col==='red'?'green':'red';
+      s = sign * (-abNega(nb, opp, depth-1, -beta, -alpha, myCol));
+      s = abNega2(nb, col, depth, alpha, beta, myCol, s, sign);
+    }
+    best = Math.max(best, s*sign)*sign;
+    // Actually just do standard negamax:
+    const raw = minimax2(nb, col==='red'?'green':'red', depth-1, -beta, -alpha, myCol);
+    best = Math.max(best, raw*-1 * (col===myCol?1:-1));
+    if(best > alpha) alpha=best;
+    if(beta<=alpha) break;
+  }
+  return best;
+}
+
+// Cleaner minimax
+function minimax2(board, col, depth, alpha, beta, myCol){
+  if(Date.now()-aiStartTime > aiTimeLimit) return evalBoard(board,myCol);
+  const mvs=getMvs(board,col);
+  if(!mvs.length) return col===myCol ? -90000 : 90000;
+  if(depth<=0) return quiescence(board,col,3,alpha,beta,myCol);
+  mvs.sort((a,b)=>mvHeuristic(board,b,col)-mvHeuristic(board,a,col));
+  const isMax=col===myCol;
+  let best=isMax?-999999:999999;
+  for(const mv of mvs){
+    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
+    const p=nb[mv.to.r][mv.to.c];
+    let s;
+    if(mv.to.cap&&p&&getKillsB(nb,mv.to.c,mv.to.r,p).length>0){
+      s=chainMM(nb,mv.to.c,mv.to.r,depth,alpha,beta,myCol,col);
+    } else {
+      s=minimax2(nb,col==='red'?'green':'red',depth-1,alpha,beta,myCol);
+    }
+    if(isMax){best=Math.max(best,s);alpha=Math.max(alpha,s);}
+    else{best=Math.min(best,s);beta=Math.min(beta,s);}
+    if(beta<=alpha) break;
+  }
+  return best;
+}
+
+function chainMM(board,c,r,depth,alpha,beta,myCol,captCol){
+  const p=board[r][c]; if(!p) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
+  const chains=getKillsB(board,c,r,p);
+  if(!chains.length) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
+  const isMax=captCol===myCol;
+  let best=isMax?-999999:999999;
+  for(const m of chains){
+    const nb=cloneB(board); applyB(nb,{c,r},m);
+    const np=nb[m.r][m.c];
+    const s=np&&getKillsB(nb,m.c,m.r,np).length>0
+      ? chainMM(nb,m.c,m.r,depth,alpha,beta,myCol,captCol)
+      : minimax2(nb,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
+    if(isMax){best=Math.max(best,s);alpha=Math.max(alpha,s);}
+    else{best=Math.min(best,s);beta=Math.min(beta,s);}
+    if(beta<=alpha) break;
+  }
+  return best;
+}
+
+function chainSearch(board,c,r,depth,alpha,beta,myCol,captCol){
+  const p=board[r][c]; if(!p) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
+  const chains=getKillsB(board,c,r,p);
+  if(!chains.length) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
+  const isMax=captCol===myCol;
+  let best=isMax?-999999:999999;
+  for(const m of chains){
+    const nb=cloneB(board); applyB(nb,{c,r},m);
+    const np=nb[m.r][m.c];
+    const s=np&&getKillsB(nb,m.c,m.r,np).length>0
+      ? chainSearch(nb,m.c,m.r,depth,alpha,beta,myCol,captCol)
+      : minimax2(nb,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
+    if(isMax){best=Math.max(best,s);alpha=Math.max(alpha,s);}
+    else{best=Math.min(best,s);beta=Math.min(beta,s);}
+    if(beta<=alpha) break;
+  }
+  return best;
+}
+
+function abNega2(nb,col,depth,alpha,beta,myCol,s,sign){return s;}
+
+function quiescence(board,col,depth,alpha,beta,myCol){
+  const stand=evalBoard(board,myCol);
+  if(depth<=0) return stand;
+  const isMax=col===myCol;
+  if(isMax){if(stand>=beta)return beta;if(stand>alpha)alpha=stand;}
+  else{if(stand<=alpha)return alpha;if(stand<beta)beta=stand;}
+  const caps=[];
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c]; if(!p||p.t!==col) continue;
+    for(const m of getKillsB(board,c,r,p)) caps.push({from:{c,r},to:m});
+  }
+  if(!caps.length) return stand;
+  caps.sort((a,b)=>capVal(board,b)-capVal(board,a));
+  let best=stand;
+  for(const mv of caps){
+    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
+    const s=quiescence(nb,col==='red'?'green':'red',depth-1,alpha,beta,myCol);
+    best=isMax?Math.max(best,s):Math.min(best,s);
+    if(isMax){if(best>alpha)alpha=best;}else{if(best<beta)beta=best;}
+    if(beta<=alpha) break;
+  }
+  return best;
+}
+
+function capVal(board,mv){
+  if(!mv.to.cap) return 0;
+  const p=board[mv.to.cap.r][mv.to.cap.c];
+  return p?(p.s?400:120):0;
+}
+
+// Move ordering: higher = better, search first
+function mvHeuristic(board,mv,col){
+  let s=0;
+  const opp=col==='red'?'green':'red';
+  if(mv.to.cap){
+    const cp=board[mv.to.cap.r][mv.to.cap.c];
+    s+=cp?(cp.s?700:250):250;
+    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
+    const p=nb[mv.to.r][mv.to.c];
+    if(p) s+=getKillsB(nb,mv.to.c,mv.to.r,p).length*180;
+    if(cp&&isPieceThreatB(board,mv.to.cap.c,mv.to.cap.r,col)) s+=120;
+  }
+  if((col==='green'&&mv.to.r===BS-1)||(col==='red'&&mv.to.r===0)) s+=600;
+  if((col==='green'&&mv.to.r>=7)||(col==='red'&&mv.to.r<=1)) s+=100;
+  if((col==='green'&&mv.to.r>=6)||(col==='red'&&mv.to.r<=2)) s+=50;
+  if(isPieceThreatB(board,mv.from.c,mv.from.r,col)) s+=150;
+  if(isPieceThreatB2(board,mv.to.c,mv.to.r,opp,mv.from.c,mv.from.r)) s-=100;
+  const adv=col==='green'?mv.to.r:(BS-1-mv.to.r);
+  s+=adv*6;
+  s+=(4-Math.max(Math.abs(mv.to.c-4),Math.abs(mv.to.r-4)))*9;
+  return s;
+}
+
+function isPieceThreatB(board,c,r,color){
+  const opp=color==='red'?'green':'red';
+  for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
+    const p=board[rr][cc];
+    if(p&&p.t===opp&&getKillsB(board,cc,rr,p).some(k=>k.cap.c===c&&k.cap.r===r)) return true;
+  }
+  return false;
+}
+function isPieceThreatB2(board,c,r,oppColor,fc,fr){
+  const tmp=cloneB(board); tmp[fr][fc]=null;
+  for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
+    const p=tmp[rr][cc];
+    if(p&&p.t===oppColor&&getKillsB(tmp,cc,rr,p).some(k=>k.cap.c===c&&k.cap.r===r)) return true;
+  }
+  return false;
+}
+
+// BOARD EVALUATION — Dhamiet-specific (from rulebook knowledge)
+function evalBoard(board,myCol){
+  const opp=myCol==='red'?'green':'red';
+  let s=0, myN=0,oppN=0,myS=0,oppS=0;
+  const isKarn=(r,c)=>(r===0||r===8)&&(c===0||c===8);
+  const isSharka=(r,c)=>(r===0||r===8)&&(c===1||c===7);
+
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c]; if(!p) continue;
+    const mine=p.t===myCol;
+    if(mine){myN++;if(p.s)myS++;}else{oppN++;if(p.s)oppS++;}
+    let v=0;
+    if(p.s){
+      v=450;
+      v+=getKillsB(board,c,r,p).length*25;
+      v+=getMovesB(board,c,r,p).length*10;
+      v+=(4-Math.max(Math.abs(c-4),Math.abs(r-4)))*18;
+      if(isKarn(r,c)) v+=40;
+    } else {
+      v=120;
+      const adv=p.t==='green'?r:(BS-1-r);
+      v+=adv*12;
+      // Near promotion
+      if((p.t==='green'&&r>=7)||(p.t==='red'&&r<=1)) v+=80;
+      if((p.t==='green'&&r>=6)||(p.t==='red'&&r<=2)) v+=40;
+      // Center control (book: central position = power base for Kalliya)
+      v+=(4-Math.abs(c-4))*8;
+      // Flanks = attack corridors (book: column 1 and 9)
+      if(c===0||c===8) v+=adv*4;
+      // Safety
+      if(isPieceThreatB(board,c,r,p.t)) v-=100;
+      // Attack power
+      v+=getKillsB(board,c,r,p).length*50;
+      // Formation (book: connected pieces = "Kalliya" strength)
+      let conn=0;
+      const drs=onDiag(c,r)?[[1,1],[1,-1],[-1,1],[-1,-1],[0,1],[0,-1],[1,0],[-1,0]]:[[0,1],[0,-1],[1,0],[-1,0]];
+      for(const [dr,dc] of drs){
+        const nr=r+dr,nc=c+dc;
+        if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&board[nr][nc]&&board[nr][nc].t===p.t) conn++;
+      }
+      v+=conn*10;
+      // Karn safety (book: corners are safest = "Karn")
+      if(isKarn(r,c)) v+=30;
+      // Sharka = danger zone (sultan trap near corner)
+      if(isSharka(r,c)) v-=10;
+      // Penalty for isolation
+      if(conn===0) v-=15;
+    }
+    mine?s+=v:s-=v;
+  }
+  // Material
+  s+=(myN-oppN)*90;
+  s+=(myS-oppS)*350;
+  // Kill balance (attack potential)
+  let mk=0,ok=0,mm=0,om=0;
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c]; if(!p) continue;
+    const k=getKillsB(board,c,r,p).length;
+    const m=getMovesB(board,c,r,p).length;
+    p.t===myCol?(mk+=k,mm+=m):(ok+=k,om+=m);
+  }
+  s+=(mk-ok)*35;
+  s+=(mm-om)*5;
+  if(oppN===0) return 999999;
+  if(myN===0) return -999999;
+  if(oppN<=5) s+=(6-oppN)*200;
+  if(myN<=5) s-=(6-myN)*200;
+  return s;
+}
+
+function getMvs(board,col){
+  const res=[];
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c];
+    if(p&&p.t===col){const k=getKillsB(board,c,r,p);if(k.length) for(const m of k) res.push({from:{c,r},to:m});}
+  }
+  if(res.length) return res;
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c];
+    if(p&&p.t===col){const nm=getMovesB(board,c,r,p);for(const m of nm) res.push({from:{c,r},to:m});}
+  }
+  return res;
+}
+
+function getKillsB(board,c,r,p){
+  const mv=[],opp=p.t==='red'?'green':'red';
+  const dirs=onDiag(c,r)?[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]:[[0,1],[0,-1],[1,0],[-1,0]];
+  for(const [dr,dc] of dirs){
+    if(p.s){
+      let nr=r+dr,nc=c+dc;
+      while(nr>=0&&nr<BS&&nc>=0&&nc<BS){
+        const tt=board[nr][nc];
+        if(tt){if(tt.t===opp){let lr=nr+dr,lc=nc+dc;while(lr>=0&&lr<BS&&lc>=0&&lc<BS&&!board[lr][lc]){mv.push({c:lc,r:lr,cap:{c:nc,r:nr}});lr+=dr;lc+=dc;}}break;}
+        nr+=dr;nc+=dc;
+      }
+    } else {
+      const mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc;
+      if(mr>=0&&mr<BS&&mc>=0&&mc<BS&&lr>=0&&lr<BS&&lc>=0&&lc<BS)
+        if(board[mr][mc]&&board[mr][mc].t===opp&&!board[lr][lc]) mv.push({c:lc,r:lr,cap:{c:mc,r:mr}});
+    }
+  }
+  return mv;
+}
+
+function getMovesB(board,c,r,p){
+  const mv=[];
+  const f=p.t==='red'?-1:1;
+  const dirs=p.s?[[0,1],[0,-1],[1,0],[-1,0],...(onDiag(c,r)?[[1,1],[1,-1],[-1,1],[-1,-1]]:[])]:[[f,0],...(onDiag(c,r)?[[f,1],[f,-1]]:[])];
+  for(const [dr,dc] of dirs){
+    if(p.s){let nr=r+dr,nc=c+dc;while(nr>=0&&nr<BS&&nc>=0&&nc<BS){if(board[nr][nc])break;mv.push({c:nc,r:nr});nr+=dr;nc+=dc;}}
+    else{const nr=r+dr,nc=c+dc;if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&!board[nr][nc])mv.push({c:nc,r:nr});}
+  }
+  return mv;
+}
+
+function cloneB(b){return b.map(r=>r.map(p=>p?{t:p.t,s:p.s}:null));}
+function applyB(b,f,tt){
+  const p=b[f.r][f.c]; if(!p) return;
+  b[tt.r][tt.c]=p; b[f.r][f.c]=null;
+  if(tt.cap) b[tt.cap.r][tt.cap.c]=null;
+  if(!p.s&&((p.t==='red'&&tt.r===0)||(p.t==='green'&&tt.r===BS-1))) p.s=true;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+// Coordinate naming: row = A-I (top to bottom), col = 1-9 (left to right)
+// e.g. pos{c:4, r:4} = "E5" (Morada), pos{c:3,r:5} = "F4" (red warda)
+function cn(pos){return 'ABCDEFGHI'[pos.r]+(pos.c+1);}
+
+function flashCell(c,r,color){
+  const idx=r*BS+c;
+  const cells=document.querySelectorAll('.ix');
+  if(!cells[idx]) return;
+  cells[idx].style.background=`radial-gradient(circle,${color} 0%,transparent 65%)`;
+  setTimeout(()=>{if(cells[idx])cells[idx].style.background='';},480);
+}
+
+function toast(msg,dur=1900){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),dur);
+}
+
+function showModal(icon,title,text,actions){
+  document.getElementById('mi').textContent=icon;
+  document.getElementById('mt').textContent=title;
+  document.getElementById('mx').innerHTML=text;
+  document.getElementById('ma').innerHTML=actions.map(a=>
+    `<button class="btn ${a.c}" onclick="${a.fn};closeModal()">${a.tx}</button>`
+  ).join('');
+  document.getElementById('mo').classList.add('show');
+}
+function closeModal(){document.getElementById('mo').classList.remove('show');}
+
+function toggleSoufla(){
+  G.soufla=!G.soufla;
+  const btn=document.getElementById('btn-soufla-game');
+  btn.style.background=G.soufla?'rgba(255,165,0,.3)':'rgba(255,255,255,.08)';
+  btn.style.borderColor=G.soufla?'rgba(255,165,0,.6)':'rgba(255,255,255,.2)';
+  btn.style.color=G.soufla?'#FFB040':'var(--sand)';
+  toast((G.soufla?(L==='ar'?'السوفلة مفعّلة ✓':'Soufla activée ✓'):(L==='ar'?'السوفلة معطّلة':'Soufla désactivée')),1500);
+}
+function confirmQuit(){
+  showModal('🚪',t('qt'),t('qx'),[
+    {tx:t('yes'),c:'btn-d',fn:"if(OL&&OL.pollTimer)clearInterval(OL.pollTimer);OL.active=false;showScreen('menu-screen')"},
+    {tx:t('no'),c:'btn-g',fn:''}]);
+}
+function confirmRestart(){
+  showModal('↺',t('rt'),t('rx'),[{tx:t('yes'),c:'btn-p',fn:'startGame()'},{tx:t('no'),c:'btn-g',fn:''}]);
+}
+
+// ============================================================
+// ONLINE GAME — Ably Realtime (free tier, reliable everywhere)
+// ============================================================
+// Free Ably API key — valid for Dhamiet game
+const ABLY_KEY = 'QYuGeQ.iBTEFQ:MOy1TszptrWq6F-jUYQOswPdC-KQ5IqRJR2JRPgMjtg';
+let OL={active:false,role:null,myColor:null,ably:null,channel:null,myName:'',oppName:'',soufla:true,code:null};
+
+function showOnlineTab(tab){
+  const c=tab==='create';
+  document.getElementById('panel-create').style.display=c?'flex':'none';
+  document.getElementById('panel-join').style.display=c?'none':'flex';
+  document.getElementById('tab-create').style.background=c?'var(--gold)':'transparent';
+  document.getElementById('tab-create').style.color=c?'var(--deep)':'var(--gold-l)';
+  document.getElementById('tab-join').style.background=c?'transparent':'var(--gold)';
+  document.getElementById('tab-join').style.color=c?'var(--gold-l)':'var(--deep)';
+}
+
+function onlineStatus(msg,spin=false){
+  const el=document.getElementById('on-status');
+  el.style.display=msg?'block':'none';
+  el.textContent=(spin?'⏳ ':'')+msg;
+}
+
+function makeCode(){return String(100000+Math.floor(Math.random()*900000));}
+
+// Load Ably SDK dynamically
+function loadAbly(cb){
+  if(window.Ably){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdn.ably.com/lib/ably.min-1.js';
+  s.onload=cb;
+  s.onerror=()=>onlineStatus(L==='ar'?'خطأ في التحميل':'Erreur de chargement');
+  document.head.appendChild(s);
+}
+
+function onlineCreate(){
+  const name=(document.getElementById('on-name1').value.trim())||'Joueur 1';
+  document.getElementById('on-btn-create').disabled=true;
+  onlineStatus(L==='ar'?'جاري الاتصال...':'Connexion...',true);
+
+  loadAbly(()=>{
+    const code=makeCode();
+    OL.role='host';OL.myColor='red';OL.myName=name;OL.soufla=true;OL.code=code;
+
+    const ably=new Ably.Realtime({key:ABLY_KEY,clientId:'host-'+code});
+    OL.ably=ably;
+    ably.connection.on('connected',()=>{
+      const ch=ably.channels.get('dhamiet-'+code);
+      OL.channel=ch;
+      ch.subscribe('join',(msg)=>{
+        OL.oppName=msg.data.name||'Invité';
+        ch.publish('config',{hostName:OL.myName,soufla:OL.soufla});
+        closeModal();
+        startOnlineGame();
+      });
+      ch.subscribe('move',(msg)=>{
+        if(OL.active) doMove(msg.data.from,msg.data.to);
+      });
+      onlineStatus('');
+      showModal('🎮',
+        L==='ar'?'الغرفة جاهزة':'Salle prête',
+        `<div style="font-size:.82rem;color:var(--sand);margin-bottom:8px">
+          ${L==='ar'?'أرسل هذا الرمز لصديقك:':'Envoyez ce code à votre ami :'}
+        </div>
+        <div style="font-size:3rem;font-weight:800;color:var(--gold);
+          letter-spacing:12px;text-align:center;margin:10px 0;font-family:monospace">${code}</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4)">
+          ⏳ ${L==='ar'?'في انتظار الخصم...':'En attente de l\'adversaire...'}
+        </div>`,
+        [{tx:'📲 WhatsApp',c:'btn-p',fn:`shareCode6('${code}')`},
+         {tx:L==='ar'?'إلغاء':'Annuler',c:'btn-g',fn:'cancelOnline()'}]
+      );
+    });
+    ably.connection.on('failed',()=>{
+      onlineStatus(L==='ar'?'فشل الاتصال':'Connexion échouée');
+      document.getElementById('on-btn-create').disabled=false;
+    });
+  });
+}
+
+function onlineJoin(){
+  const name=(document.getElementById('on-name2').value.trim())||'Joueur 2';
+  const code=document.getElementById('on-code').value.replace(/\D/g,'').slice(0,6);
+  if(code.length<4){toast(L==='ar'?'أدخل الرمز':'Entrez le code',1800);return;}
+  document.getElementById('on-btn-join').disabled=true;
+  onlineStatus(L==='ar'?'جاري الاتصال...':'Connexion...',true);
+
+  loadAbly(()=>{
+    OL.role='guest';OL.myColor='green';OL.myName=name;OL.code=code;
+
+    const ably=new Ably.Realtime({key:ABLY_KEY,clientId:'guest-'+code+'-'+Date.now()});
+    OL.ably=ably;
+    ably.connection.on('connected',()=>{
+      const ch=ably.channels.get('dhamiet-'+code);
+      OL.channel=ch;
+      ch.subscribe('config',(msg)=>{
+        OL.oppName=msg.data.hostName||'Hôte';
+        OL.soufla=msg.data.soufla;
+        onlineStatus('');
+        startOnlineGame();
+      });
+      ch.subscribe('move',(msg)=>{
+        if(OL.active) doMove(msg.data.from,msg.data.to);
+      });
+      // Announce presence to host
+      ch.publish('join',{name});
+      setTimeout(()=>{
+        if(!OL.active){
+          onlineStatus(L==='ar'?'لا توجد غرفة بهذا الرمز':'Aucune salle avec ce code');
+          document.getElementById('on-btn-join').disabled=false;
+        }
+      },8000);
+    });
+    ably.connection.on('failed',()=>{
+      onlineStatus(L==='ar'?'فشل الاتصال':'Connexion échouée');
+      document.getElementById('on-btn-join').disabled=false;
+    });
+  });
+}
+
+function startOnlineGame(){
+  OL.active=true;
+  if(timerInt)clearInterval(timerInt);
+  const isHost=OL.role==='host';
+  G={
+    board:initBoard(),turn:'red',phase:'atk',atkDone:false,
+    sel:null,valid:[],hist:[],log:[],capR:0,capG:0,
+    p1:isHost?OL.myName:OL.oppName,
+    p2:isHost?OL.oppName:OL.myName,
+    mode:'online',aiLv:0,over:false,lastMove:null,
+    soufla:true,sfMode:false,sfOff:null,sfTgt:[],
+    tpp:0,timers:{red:0,green:0},mc:0,chainPiece:null,
+  };
+  document.getElementById('p1dn').textContent=G.p1;
+  document.getElementById('p2dn').textContent=G.p2;
+  buildGrid();drawLines();renderBoard();updateUI();
+  showScreen('game-screen');
+  setTimeout(sizeBoard,60);
+  const msg=OL.myColor==='red'
+    ?(L==='ar'?'أنت تلعب بالعصي 🪄 (أسفل)':'Vous jouez les bâtons 🪄 (bas)')
+    :(L==='ar'?'أنت تلعب بالبراز 🫘 (أعلى)':'Vous jouez les crottes 🫘 (haut)');
+  toast(msg,3000);
+}
+
+function pushOnlineMove(from,to){
+  if(OL.active&&OL.channel)
+    OL.channel.publish('move',{from,to,by:OL.role});
+}
+
+function shareCode6(code){
+  const link='https://sidimaz.github.io/Dhamit';
+  const txt=L==='ar'
+    ?`مرحباً! العب معي ظامت 🎮\n\n1️⃣ افتح: ${link}\n2️⃣ اضغط "جوع عبر الإنترنت"\n3️⃣ اضغط "Rejoindre"\n4️⃣ أدخل الرمز: ${code}`
+    :`Joue avec moi au Dhamié ! 🎮\n\n1️⃣ Ouvre : ${link}\n2️⃣ Appuie "Jouer en ligne"\n3️⃣ Appuie "Rejoindre"\n4️⃣ Entre le code : ${code}`;
+  if(navigator.share){navigator.share({title:'Dhamié',text:txt}).catch(()=>window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank'));}
+  else window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
+}
+
+function cancelOnline(){
+  if(OL.ably)try{OL.ably.close();}catch(e){}
+  OL={active:false,role:null,myColor:null,ably:null,channel:null,myName:'',oppName:'',soufla:true,code:null};
+  document.getElementById('on-btn-create').disabled=false;
+  document.getElementById('on-btn-join').disabled=false;
+  onlineStatus('');
+}
+
+function copyCode(id){
+  if(navigator.clipboard){navigator.clipboard.writeText(id).then(()=>toast(L==='ar'?'تم النسخ ✓':'Copié ✓',1500));}
+  else{try{const tx=document.createElement('textarea');tx.value=id;document.body.appendChild(tx);tx.select();document.execCommand('copy');document.body.removeChild(tx);toast('Copié ✓',1500);}catch(e){}}
+}
+
+// ============================================================
+function shareApp(){
+  const url=window.location.href;
+  if(navigator.share){
+    navigator.share({title:'ظامِتْ | Dhamié',text:L==='ar'?'العب معي ظامت!':'Joue avec moi au Dhamié !',url}).catch(()=>{});
+  } else showShareModal();
+}
+
+function showShareModal(){
+  const url=window.location.href;
+  showModal('🔗',t('shTtl'),
+    `<div style="font-size:.82rem;color:var(--sand);line-height:1.7;margin-bottom:10px">${t('shMsg')}</div>
+     <div class="shi">
+       <input class="fi" id="sh-url" value="${url}" readonly style="font-size:.66rem;padding:6px 9px">
+       <button class="btn btn-s btn-sm" onclick="copyShare()">📋</button>
+     </div>`,
+    [{tx:t('wa'),c:'btn-p',fn:`openWA('${url}')`},{tx:t('cl'),c:'btn-g',fn:''}]
+  );
+}
+function openWA(url){window.open(`https://wa.me/?text=${encodeURIComponent((L==='ar'?'العب معي ظامت!\n':'Joue avec moi au Dhamié !\n')+url)}`,'_blank');}
+function copyShare(){
+  const el=document.getElementById('sh-url');if(!el) return;
+  if(navigator.clipboard){navigator.clipboard.writeText(el.value).then(()=>toast(t('cpOk'),1500));}
+  else{el.select();try{document.execCommand('copy');toast(t('cpOk'),1500);}catch(e){toast(t('cpFail'),2500);}}
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+document.getElementById('mo').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeModal();
+  if((e.ctrlKey||e.metaKey)&&e.key==='z')undoMove();
+});
+window.addEventListener('load',()=>{
+  setLang('fr');
+  showOnlineTab('create');
+});
+</script>
+
+</body>
+</html>
