@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;position:fixed;inset:0;background:#130E04;color:#FAF3E0;font-family:Arial,sans-serif}
+.screen{display:none;position:fixed;inset:0;flex-direction:column}
+.screen.active{display:flex}
+#menu-screen{align-items:center;justify-content:center;padding:20px;text-align:center}
+#menu-screen .gtitle{font-size:3rem;color:#C9933A}
+#menu-screen .gsub{font-size:.9rem;color:#C9A876;margin:8px 0 20px}
+.btn{padding:14px 22px;border:none;cursor:pointer;font-size:1rem;font-weight:600;border-radius:8px;background:linear-gradient(135deg,#8B6320,#C9933A,#E8B860);color:#130E04;width:100%;max-width:340px;margin:6px 0}
+.btn2{background:rgba(201,147,58,.12);color:#E8B860;border:1px solid rgba(201,147,58,.4)}
+
+.ghdr{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(0,0,0,.5);border-bottom:1px solid rgba(201,147,58,.2)}
+.ghdr .logo{font-size:1.2rem;color:#C9933A;font-weight:700}
+.ghdr button{padding:6px 12px;border:none;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;color:#C9A876;background:transparent;border:1px solid rgba(255,255,255,.2)}
+.ghdr .hbtnd{padding:6px 12px;border:none;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;color:#FF9090;background:rgba(180,40,40,.3);border:1px solid rgba(180,40,40,.5)}
+
+.glayout{flex:1;display:flex;overflow:hidden}
+.sp{width:110px;flex-shrink:0;padding:8px 5px;background:rgba(0,0,0,.4);font-size:.68rem;color:#C9A876;overflow-y:auto}
+.sp b{color:#FFF}
+.sp .pcard{padding:6px;border:2px solid rgba(201,147,58,.2);border-radius:6px;margin-bottom:6px}
+.sp .pcard.bc{border-left:4px solid #C89228}
+.sp .pcard.dc{border-left:4px solid #5A3820}
+.ba{flex:1;display:flex;align-items:center;justify-content:center;padding:6px}
+canvas{background:#D4B07A;border-radius:4px;box-shadow:inset 0 0 20px rgba(100,55,15,.2)}
+.sbar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:rgba(0,0,0,.5);border-top:1px solid rgba(201,147,58,.18);font-size:.68rem}
+.sbar .pbadge{color:#E8B860}
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:7px 16px;border-radius:20px;font-size:.7rem;opacity:0;transition:.3s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="menu-screen" class="screen active">
+<div class="gtitle">ظامِتْ</div>
+<div class="gsub">Dhamié — Jeu mauritanien</div>
+<button class="btn" onclick="startGame('local')">♟ Jeu local (2 joueurs)</button>
+<button class="btn btn2" onclick="startGame('ai')">🤖 Contre l'ordinateur</button>
+</div>
+
+<div id="game-screen" class="screen">
+<div class="ghdr">
+<button onclick="showScreen('menu-screen')">← Menu</button>
+<div class="logo">ظامِتْ</div>
+<div>
+<button onclick="undoMove()">↩</button>
+<button class="hbtnd" onclick="startGame(gmode)">↺</button>
+</div></div>
+<div class="glayout">
+<div class="sp">
+<div class="pcard bc"><b id="p1dn">Joueur 1</b><br>Pièces: <span id="p1pc">40</span><br>Sultans: <span id="p1sul">0</span></div>
+<div class="pcard dc"><b id="p2dn">Joueur 2</b><br>Pièces: <span id="p2pc">40</span><br>Sultans: <span id="p2sul">0</span></div>
+🪄 pris: <span id="p1cap">0</span><br>🫘 pris: <span id="p2cap">0</span>
+</div>
+<div class="ba"><canvas id="boardCanvas"></canvas></div>
+</div>
+<div class="sbar"><span class="pbadge" id="pbadge">Warda</span><span id="smsg">Bienvenue !</span><span id="mcnt">0 cps</span></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var BS=9,MC=4,MR=4,G={},gmode='local',canvas,ctx;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+}
+
+function initBoard(){
+  var b=[];
+  for(var r=0;r<BS;r++){b[r]=[];for(var c=0;c<BS;c++){
+    if(r===MR&&c===MC){b[r][c]=null;continue}
+    if(r<4)b[r][c]={t:'green',s:false};
+    else if(r>4)b[r][c]={t:'red',s:false};
+    else{if(c<4)b[r][c]={t:'green',s:false};else if(c>4)b[r][c]={t:'red',s:false};else b[r][c]=null}
+  }}
+  return b;
+}
+
+function startGame(m){
+  gmode=m;
+  var starter=Math.random()<.5?'red':'green';
+  G={board:initBoard(),turn:starter,phase:'atk',sel:null,valid:[],hist:[],log:[],capR:0,capG:0,p1:'Joueur 1',p2:m==='ai'?'Ordinateur':'Joueur 2',mode:m,over:false,lastMove:null,soufla:true,sfMode:false,sfTgt:[],mc:0,chainPiece:null};
+  document.getElementById('p1dn').textContent=G.p1;
+  document.getElementById('p2dn').textContent=G.p2;
+  canvas=document.getElementById('boardCanvas');
+  ctx=canvas.getContext('2d');
+  resizeCanvas();
+  drawBoard();
+  showScreen('game-screen');
+  document.getElementById('smsg').textContent='Faites la Warda';
+  if(m==='ai'&&G.turn==='green')setTimeout(aiTurn,800);
+}
+
+function resizeCanvas(){
+  var container=canvas.parentElement;
+  var size=Math.min(container.clientWidth,container.clientHeight);
+  canvas.width=size;canvas.height=size;
+}
+
+function drawBoard(){
+  if(!ctx)return;
+  var w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#D4B07A';ctx.fillRect(0,0,w,h);
+  
+  var m=w*0.08, s=(w-2*m)/8;
+  
+  // Draw grid lines - THICK AND VISIBLE
+  ctx.strokeStyle='#3A1E08';
+  ctx.lineWidth=Math.max(2,w*0.005);
+  for(var i=0;i<9;i++){
+    ctx.beginPath();
+    ctx.moveTo(m,m+i*s);ctx.lineTo(m+8*s,m+i*s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(m+i*s,m);ctx.lineTo(m+i*s,m+8*s);
+    ctx.stroke();
+  }
+  
+  // Draw diagonal lines
+  ctx.strokeStyle='rgba(55,20,5,.35)';
+  ctx.lineWidth=Math.max(1,w*0.003);
+  for(var br=0;br<8;br+=2){
+    for(var bc=0;bc<8;bc+=2){
+      ctx.beginPath();
+      ctx.moveTo(m+bc*s,m+br*s);ctx.lineTo(m+(bc+2)*s,m+(br+2)*s);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(m+(bc+2)*s,m+br*s);ctx.lineTo(m+bc*s,m+(br+2)*s);
+      ctx.stroke();
+    }
+  }
+  
+  // Draw pieces
+  if(G.board){
+    for(var r=0;r<BS;r++){
+      for(var c=0;c<BS;c++){
+        var p=G.board[r][c];
+        if(!p)continue;
+        var x=m+c*s, y=m+r*s, rad=s*0.32;
+        if(p.t==='red'){
+          // Baton (gold)
+          ctx.fillStyle='#E8B860';
+          ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle='#8B6320';
+          ctx.fillRect(x-rad*0.12,y,rad*0.24,s*0.32);
+        } else {
+          // Dung (dark)
+          ctx.fillStyle='#4A2A10';
+          ctx.beginPath();ctx.ellipse(x,y,rad,rad*1.3,0,0,Math.PI*2);ctx.fill();
+        }
+        if(p.s){
+          ctx.fillStyle='#FFD700';
+          ctx.font='bold '+(rad*1.3)+'px Arial';
+          ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillText('★',x,y-rad*0.15);
+        }
+      }
+    }
+  }
+  
+  // Highlight selected piece
+  if(G.sel){
+    var x=m+G.sel.c*s, y=m+G.sel.r*s;
+    ctx.strokeStyle='#FFD700';ctx.lineWidth=Math.max(3,w*0.007);
+    ctx.beginPath();ctx.arc(x,y,s*0.35,0,Math.PI*2);ctx.stroke();
+  }
+  
+  // Show valid moves
+  for(var i=0;i<G.valid.length;i++){
+    var v=G.valid[i], x=m+v.c*s, y=m+v.r*s;
+    ctx.fillStyle='rgba(255,215,0,.5)';
+    ctx.beginPath();ctx.arc(x,y,s*0.1,0,Math.PI*2);ctx.fill();
+  }
+  
+  // Morada marker
+  ctx.strokeStyle='rgba(180,120,20,.8)';
+  ctx.lineWidth=Math.max(1.5,w*0.003);
+  ctx.beginPath();
+  ctx.moveTo(m+MC*s,m+MR*s-s*0.35);ctx.lineTo(m+MC*s,m+MR*s+s*0.35);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(m+MC*s-s*0.35,m+MR*s);ctx.lineTo(m+MC*s+s*0.35,m+MR*s);
+  ctx.stroke();
+}
+
+canvas=document.getElementById('boardCanvas');
+canvas.addEventListener('click',function(e){
+  var rect=canvas.getBoundingClientRect(),w=canvas.width,m=w*0.08,s=(w-2*m)/8,x=e.clientX-rect.left,y=e.clientY-rect.top,c=Math.round((x-m)/s),r=Math.round((y-m)/s);
+  if(c>=0&&c<9&&r>=0&&r<9)onCell(c,r);
+});
+
+function updateUI(){
+  var rc=0,gc=0,rs=0,gs=0;
+  for(var r=0;r<BS;r++)for(var c=0;c<BS;c++){
+    var p=G.board[r][c];if(!p)continue;
+    p.t==='red'?(rc++,p.s&&rs++):(gc++,p.s&&gs++);
+  }
+  document.getElementById('p1pc').textContent=rc;
+  document.getElementById('p2pc').textContent=gc;
+  document.getElementById('p1sul').textContent=rs;
+  document.getElementById('p2sul').textContent=gs;
+  document.getElementById('p1cap').textContent=G.capR;
+  document.getElementById('p2cap').textContent=G.capG;
+  document.getElementById('pbadge').textContent=G.phase==='atk'?'Warda':'Jeu libre';
+  document.getElementById('mcnt').textContent=G.mc+' cps';
+  if(!G.over)document.getElementById('smsg').textContent='Au tour de '+(G.turn==='red'?G.p1:G.p2);
+  drawBoard();
+}
+
+function onCell(c,r){
+  if(G.over)return;
+  if(G.sfMode){handleSouflaClick(c,r);return}
+  if(G.mode==='ai'&&G.turn==='green')return;
+  if(G.phase==='atk')handleWarda(c,r);
+  else handlePlay(c,r);
+}
+
+function handleWarda(c,r){
+  var wf=G.turn==='red'?{c:3,r:5}:{c:5,r:3},wt={c:MC,r:MR},p=G.board[r][c];
+  if(G.sel&&c===wt.c&&r===wt.r){doMove(G.sel,wt);return}
+  if(p&&p.t===G.turn){
+    if(c===wf.c&&r===wf.r){G.sel={c:c,r:r};G.valid=[wt]}
+    drawBoard();return;
+  }
+  G.sel=null;G.valid=[];drawBoard();
+}
+
+function handlePlay(c,r){
+  var p=G.board[r][c];
+  if(G.sel){
+    for(var i=0;i<G.valid.length;i++){
+      if(G.valid[i].c===c&&G.valid[i].r===r){
+        doMove(G.sel,G.valid[i]);return;
+      }
+    }
+  }
+  if(p&&p.t===G.turn){
+    G.sel={c:c,r:r};
+    var mk=pieceKills(c,r,p);
+    G.valid=mk.length>0?mk:pieceMoves(c,r,p);
+    drawBoard();updateUI();return;
+  }
+  G.sel=null;G.valid=[];drawBoard();
+}
+
+function saveState(){
+  G.hist.push(JSON.parse(JSON.stringify({
+    board:G.board,turn:G.turn,phase:G.phase,
+    capR:G.capR,capG:G.capG,mc:G.mc,
+    sfMode:G.sfMode,sfTgt:G.sfTgt.slice()
+  })));
+}
+
+function doMove(from,to){
+  saveState();
+  var cap=to.cap||null;
+  execMove(from,to,cap);
+  var p=G.board[to.r][to.c];
+  if(p&&!p.s&&((p.t==='red'&&to.r===0)||(p.t==='green'&&to.r===BS-1)))p.s=true;
+  G.mc++;
+  if(G.phase==='atk')G.phase='play';
+  G.sel=null;G.valid=[];
+  if(cap){
+    var more=pieceKills(to.c,to.r,p);
+    if(more.length>0){G.sel={c:to.c,r:to.r};G.valid=more;drawBoard();updateUI();return}
+  }
+  switchTurn();
+}
+
+function execMove(from,to,cap){
+  var p=G.board[from.r][from.c];
+  G.board[to.r][to.c]=p;G.board[from.r][from.c]=null;
+  if(cap){G.board[cap.r][cap.c]=null;p.t==='red'?G.capR++:G.capG++}
+}
+
+function switchTurn(){
+  G.turn=G.turn==='red'?'green':'red';
+  drawBoard();updateUI();checkOver();
+  if(!G.over&&G.mode==='ai'&&G.turn==='green')setTimeout(aiTurn,400);
+}
+
+function handleSouflaClick(c,r){
+  var found=false;
+  for(var i=0;i<G.sfTgt.length;i++)if(G.sfTgt[i].c===c&&G.sfTgt[i].r===r)found=true;
+  if(!found)return;
+  if(G.board[r][c]){G.board[r][c]=null;G.sfOff==='red'?G.capG++:G.capR++}
+  G.sfMode=false;G.sfTgt=[];drawBoard();updateUI();
+}
+
+function onDiag(c,r){return c%2===r%2}
+
+function allDirs(c,r){
+  var d=[[0,1],[0,-1],[1,0],[-1,0]];
+  if(onDiag(c,r))d.push([1,1],[1,-1],[-1,1],[-1,-1]);
+  return d;
+}
+
+function pieceMoves(c,r,p){
+  var mv=[],fwd=p.t==='red'?-1:1;
+  var dirs=p.s?allDirs(c,r):[[fwd,0]];
+  if(!p.s&&onDiag(c,r))dirs.push([fwd,1],[fwd,-1]);
+  for(var d=0;d<dirs.length;d++){
+    var dr=dirs[d][0],dc=dirs[d][1];
+    if(p.s){
+      var nr=r+dr,nc=c+dc;
+      while(nr>=0&&nr<BS&&nc>=0&&nc<BS){
+        if(G.board[nr][nc])break;
+        mv.push({c:nc,r:nr});nr+=dr;nc+=dc;
+      }
+    }else{
+      var nr=r+dr,nc=c+dc;
+      if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&!G.board[nr][nc])mv.push({c:nc,r:nr});
+    }
+  }
+  return mv;
+}
+
+function pieceKills(c,r,p){
+  var mv=[],opp=p.t==='red'?'green':'red',dirs=allDirs(c,r);
+  for(var d=0;d<dirs.length;d++){
+    var dr=dirs[d][0],dc=dirs[d][1];
+    if(p.s){
+      var nr=r+dr,nc=c+dc;
+      while(nr>=0&&nr<BS&&nc>=0&&nc<BS){
+        var tt=G.board[nr][nc];
+        if(tt){
+          if(tt.t===opp){
+            var lr=nr+dr,lc=nc+dc;
+            while(lr>=0&&lr<BS&&lc>=0&&lc<BS&&!G.board[lr][lc]){
+              mv.push({c:lc,r:lr,cap:{c:nc,r:nr}});lr+=dr;lc+=dc;
+            }
+          }
+          break;
+        }
+        nr+=dr;nc+=dc;
+      }
+    }else{
+      var mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc;
+      if(mr>=0&&mr<BS&&mc>=0&&mc<BS&&lr>=0&&lr<BS&&lc>=0&&lc<BS)
+        if(G.board[mr][mc]&&G.board[mr][mc].t===opp&&!G.board[lr][lc])
+          mv.push({c:lc,r:lr,cap:{c:mc,r:mr}});
+    }
+  }
+  return mv;
+}
+
+function allKills(color){
+  var res=[];
+  for(var r=0;r<BS;r++)for(var c=0;c<BS;c++){
+    var p=G.board[r][c];if(p&&p.t===color){var k=pieceKills(c,r,p);if(k.length>0)res.push({from:{c:c,r:r},moves:k})}
+  }
+  return res;
+}
+
+function checkOver(){
+  var rc=0,gc=0;
+  for(var r=0;r<BS;r++)for(var c=0;c<BS;c++){var p=G.board[r][c];if(p)p.t==='red'?rc++:gc++}
+  if(rc===0){endGame('green');return}if(gc===0){endGame('red');return}
+  if(allKills(G.turn).length>0)return;
+  for(var r=0;r<BS;r++)for(var c=0;c<BS;c++){var p=G.board[r][c];if(p&&p.t===G.turn&&pieceMoves(c,r,p).length>0)return}
+  endGame(G.turn==='red'?'green':'red');
+}
+
+function endGame(w){G.over=true;document.getElementById('smsg').textContent='🏆 '+(w==='red'?G.p1:G.p2)+' gagne !'}
+
+function undoMove(){
+  if(G.hist.length===0)return;
+  var steps=(G.mode==='ai'&&G.hist.length>=2)?2:1;
+  for(var i=0;i<steps&&G.hist.length>0;i++){
+    var prev=G.hist.pop();
+    G.board=prev.board.map(function(r){return r.map(function(p){return p?{t:p.t,s:p.s}:null})});
+    G.turn=prev.turn;G.phase=prev.phase;G.capR=prev.capR;G.capG=prev.capG;G.mc=prev.mc;G.sfMode=prev.sfMode;G.sfTgt=prev.sfTgt.slice();
+  }
+  G.sel=null;G.valid=[];G.over=false;drawBoard();updateUI();
+}
+
+function aiTurn(){
+  if(G.over||G.turn!=='green')return;
+  if(G.phase==='atk'){
+    if(G.board[3]&&G.board[3][5]&&G.board[3][5].t==='green'){doMove({c:5,r:3},{c:MC,r:MR});return}
+  }
+  var mvs=[];
+  for(var r=0;r<BS;r++)for(var c=0;c<BS;c++){
+    var p=G.board[r][c];if(p&&p.t==='green'){var k=pieceKills(c,r,p);for(var i=0;i<k.length;i++)mvs.push({from:{c:c,r:r},to:k[i]})}
+  }
+  if(!mvs.length)for(var r=0;r<BS;r++)for(var c=0;c<BS;c++){
+    var p=G.board[r][c];if(p&&p.t==='green'){var m=pieceMoves(c,r,p);for(var i=0;i<m.length;i++)mvs.push({from:{c:c,r:r},to:m[i]})}
+  }
+  if(mvs.length){var mv=mvs[Math.floor(Math.random()*mvs.length)];doMove(mv.from,mv.to)}
+}
+
+window.onload=function(){showScreen('menu-screen')};
+</script>
+</body>
+</html>
