@@ -348,24 +348,15 @@
 </div>
 <div class="toast" id="toast"></div>
 <script>
+'use strict';
 
-window.onerror = function(msg, src, line, col, err) {
-document.body.innerHTML = ‘<div style="background:#000;color:#FF4444;padding:20px;font-size:14px;font-family:monospace">’ +
-‘<h2>❌ ERREUR JS DÉTECTÉE</h2>’ +
-’<p><b>Message:</b> ’ + msg + ‘</p>’ +
-’<p><b>Ligne:</b> ’ + line + ‘</p>’ +
-’<p><b>Col:</b> ’ + col + ‘</p>’ +
-’<p><b>Source:</b> ’ + src + ‘</p>’ +
-‘</div>’;
-return true;
+// Safe localStorage wrapper
+const _ls = {
+get: function(k){ try{ return _ls.get(k); }catch(e){ return null; } },
+set: function(k,v){ try{ _ls.set(k,v); }catch(e){} },
+del: function(k){ try{ _ls.del(k); }catch(e){} }
 };
-window.addEventListener(‘unhandledrejection’, function(e) {
-document.body.innerHTML += ‘<div style="background:#000;color:#FF8800;padding:20px;font-size:14px;font-family:monospace">’ +
-‘<h2>⚠️ PROMISE REJETÉE</h2>’ +
-‘<p>’ + e.reason + ‘</p></div>’;
-});
 
-‘use strict’;
 const BS=9,MC=4,MR=4;
 
 const TR={
@@ -1294,11 +1285,11 @@ uniquePlayers: {}
 };
 
 function loadGlobalStats(){
-try { const raw = localStorage.getItem(STATS_KEY); if(raw) GLOBAL_STATS = JSON.parse(raw); } catch(e){}
+try { const raw = _ls.get(STATS_KEY); if(raw) GLOBAL_STATS = JSON.parse(raw); } catch(e){}
 }
 
 function saveGlobalStats(){
-try { localStorage.setItem(STATS_KEY, JSON.stringify(GLOBAL_STATS)); } catch(e){}
+try { _ls.set(STATS_KEY, JSON.stringify(GLOBAL_STATS)); } catch(e){}
 }
 
 function statsGameStarted(mode, aiLvl){
@@ -1372,7 +1363,7 @@ const MEM_KEY = ‘dhamiet_ai_brain_v3’;
 
 function loadMemory(){
 try {
-const raw = localStorage.getItem(MEM_KEY);
+const raw = _ls.get(MEM_KEY);
 if(raw) AI_MEMORY = JSON.parse(raw);
 if(!AI_MEMORY.openings) AI_MEMORY.openings = {};
 if(!AI_MEMORY.positions) AI_MEMORY.positions = {};
@@ -1381,7 +1372,7 @@ if(!AI_MEMORY.stats) AI_MEMORY.stats = {games:0, wins:0, losses:0};
 }
 
 function saveMemory(){
-try { localStorage.setItem(MEM_KEY, JSON.stringify(AI_MEMORY)); } catch(e){}
+try { _ls.set(MEM_KEY, JSON.stringify(AI_MEMORY)); } catch(e){}
 }
 
 let SHARED_BRAIN = null;
@@ -1958,7 +1949,7 @@ function confirmQuit(){ showModal(‘🚪’,t(‘qt’),t(‘qx’),[{tx:t(‘y
 function confirmRestart(){ showModal(‘↺’,t(‘rt’),t(‘rx’),[{tx:t(‘yes’),c:‘btn-p’,fn:‘startGame()’},{tx:t(‘no’),c:‘btn-g’,fn:’’}]); }
 
 let audioCtx = null;
-let soundsEnabled = localStorage.getItem(‘dhamiet-sounds’) !== ‘false’;
+let soundsEnabled = true; try{ soundsEnabled = _ls.get(‘dhamiet-sounds’) !== ‘false’; }catch(e){}
 
 function initAudio(){
 if(!audioCtx){
@@ -2015,7 +2006,7 @@ break;
 
 function toggleSounds(){
 soundsEnabled = !soundsEnabled;
-localStorage.setItem(‘dhamiet-sounds’, soundsEnabled ? ‘true’ : ‘false’);
+_ls.set(‘dhamiet-sounds’, soundsEnabled ? ‘true’ : ‘false’);
 updateSoundButton();
 if(soundsEnabled){ initAudio(); playSound(‘turn’); }
 }
