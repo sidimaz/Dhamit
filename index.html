@@ -386,7 +386,9 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
     <div class="hbtns">
       <div id="t1" class="tdisp">—</div>
       <div id="t2" class="tdisp">—</div>
-      <button class="btn btn-s btn-sm" onclick="toggleSoufla()" id="btn-soufla-game" title="Soufla ON/OFF">⚡ Soufla</button>
+      <button class="btn btn-s btn-sm" onclick="toggleSoufla()" id="btn-soufla-game" title="Soufla ON/OFF">⚡</button>
+      <button class="btn btn-s btn-sm" onclick="reclamerSoufla()" id="btn-reclamer" title="Réclamer Soufla" style="display:none;background:rgba(255,100,0,.25);border-color:rgba(255,100,0,.6);color:#FF8040">🚨</button>
+      <button class="btn btn-s btn-sm" onclick="confirmerSoufla()" id="btn-confirmer" title="Confirmer" style="display:none;background:rgba(0,200,80,.2);border-color:rgba(0,200,80,.5);color:#40FF80">✅</button>
       <button class="btn btn-s btn-sm" onclick="undoMove()" id="b-undo">↩</button>
       <button class="btn btn-s btn-sm" onclick="showShareModal()">🔗</button>
       <button class="btn btn-d btn-sm" onclick="confirmRestart()">↺</button>
@@ -729,7 +731,6 @@ function setGuestLabels(isGuest){
 }
 
 // Manual soufla (soufla OFF mode): double-tap opponent piece, confirm with corner
-let MS={active:false,claimant:null,pos:null,lastTap:0,lastCell:null};
 
 function checkManualSoufla(c,r){
   if(G.mode!=='local'||G.soufla||G.phase!=='play'||G.sfMode) return false;
@@ -1055,6 +1056,8 @@ function updCap(id,count,type){
 function onCell(c,r){
   if(G.over) return;
   let fc=c, fr=r;
+  // Soufla manuelle double-tap
+  if(checkManualSoufla(fc,fr)) return;
   // Manual soufla corner confirmation (soufla OFF mode)
   if(MS.active&&checkManualSouflaCorner(fc,fr)) return;
   if(MS.active){MS={active:false,claimant:null,pos:null,lastTap:0,lastCell:null};
@@ -1322,6 +1325,7 @@ function execMove(from,to,cap){
 function switchTurn(){
   G.turn=G.turn==='red'?'green':'red';
   renderBoard(); updateUI(); checkOver();
+  updateReclamerButton();
   if(!G.over&&G.mode==='ai'&&G.turn==='green')
     setTimeout(aiTurn, 480+Math.random()*350);
   // Online: broadcast turn sync
@@ -1695,7 +1699,7 @@ function getBookMove(){
 }
 
 function rootSearch(board, col, depth){
-  const mvs = getMvs(board, col);
+  const mvs = (typeof getSafeMoves !== "undefined") ? getSafeMoves(board, col, true) : getMvs(board, col);
   if(!mvs.length) return null;
   mvs.sort((a,b) => mvHeuristic(board,b,col) - mvHeuristic(board,a,col));
   let best=null, bestS=-999999, alpha=-999999, beta=999999;
@@ -1713,7 +1717,7 @@ function rootSearch(board, col, depth){
 
 function abNega(board, col, depth, alpha, beta, myCol){
   if(Date.now()-aiStartTime > aiTimeLimit) return evalBoard(board, myCol);
-  const mvs = getMvs(board, col);
+  const mvs = (typeof getSafeMoves !== "undefined") ? getSafeMoves(board, col, true) : getMvs(board, col);
   if(!mvs.length) return col===myCol ? -90000 : 90000;
   if(depth <= 0) return quiescence(board, col, 4, alpha, beta, myCol);
   mvs.sort((a,b) => mvHeuristic(board,b,col) - mvHeuristic(board,a,col));
@@ -2004,6 +2008,67 @@ function applyB(b,f,tt){
 // ============================================================
 // Coordinate naming: row = A-I (top to bottom), col = 1-9 (left to right)
 // e.g. pos{c:4, r:4} = "E5" (Morada), pos{c:3,r:5} = "F4" (red warda)
+
+// ============================================================
+// SOUFLA MANUELLE
+// ============================================================
+let MS={active:false,claimant:null,pos:null,lastTap:0,lastCell:null};
+
+function updateReclamerButton(){
+  const btn=document.getElementById('btn-reclamer');
+  if(!btn) return;
+  btn.style.display=(!G.soufla&&G.phase==='play'&&!G.over)?'inline-block':'none';
+}
+
+function reclamerSoufla(){
+  if(G.soufla||G.phase!=='play'||G.sfMode) return;
+  toast(L==='ar'?'انقر مرتين على القطعة الخاطئة':'Double-cliquez sur la pièce fautive',4000);
+}
+
+function confirmerSoufla(){
+  if(!MS.active) return;
+  confirmManualSoufla();
+}
+
+function checkManualSoufla(c,r){
+  if(G.soufla||G.phase!=='play'||G.sfMode) return false;
+  if(G.mode==='ai') return false;
+  const now=Date.now();
+  const same=MS.lastCell&&MS.lastCell.c===c&&MS.lastCell.r===r;
+  const elapsed=now-MS.lastTap;
+  MS.lastTap=now; MS.lastCell={c,r};
+  if(!same||elapsed>700||elapsed<80) return false;
+  const p=G.board[r][c];
+  if(!p||p.t===G.turn) return false;
+  MS.active=true; MS.claimant=G.turn; MS.pos={c,r};
+  const cn2=G.turn==='red'?G.p1:G.p2;
+  const dn=G.turn==='red'?G.p2:G.p1;
+  document.getElementById('sfb').textContent=`⚡ ${cn2} réclame Soufla sur ${cn({c,r})} ! ${dn} : appuyez ✅`;
+  document.getElementById('sfb').style.display='block';
+  flashCell(c,r,'rgba(255,120,0,.6)');
+  const cb=document.getElementById('btn-confirmer');
+  if(cb) cb.style.display='inline-block';
+  return true;
+}
+
+function confirmManualSoufla(){
+  const pos=MS.pos;
+  flashCell(pos.c,pos.r,'rgba(255,60,60,.7)');
+  const cb=document.getElementById('btn-confirmer');
+  if(cb) cb.style.display='none';
+  setTimeout(()=>{
+    if(G.board[pos.r]&&G.board[pos.r][pos.c]){
+      G.board[pos.r][pos.c]=null;
+      MS.claimant==='red'?G.capR++:G.capG++;
+    }
+    MS={active:false,claimant:null,pos:null,lastTap:0,lastCell:null};
+    document.getElementById('sfb').style.display='none';
+    toast(L==='ar'?'سوفلة مؤكدة ✓':'Soufla confirmée ✓',2000);
+    renderBoard(); updateUI(); checkOver();
+    updateReclamerButton();
+  },600);
+}
+
 function cn(pos){return 'ABCDEFGHI'[pos.r]+(pos.c+1);}
 
 function flashCell(c,r,color){
@@ -2038,6 +2103,7 @@ function toggleSoufla(){
   btn.style.borderColor=G.soufla?'rgba(255,165,0,.6)':'rgba(255,255,255,.2)';
   btn.style.color=G.soufla?'#FFB040':'var(--sand)';
   toast((G.soufla?(L==='ar'?'السوفلة مفعّلة ✓':'Soufla activée ✓'):(L==='ar'?'السوفلة معطّلة':'Soufla désactivée')),1500);
+  updateReclamerButton();
 }
 function confirmQuit(){
   showModal('🚪',t('qt'),t('qx'),[
