@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test boutons v2</title>
+<style>
+body{background:#130E04;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+button{background:#C9933A;color:#000;border:none;padding:20px 40px;font-size:20px;border-radius:10px;cursor:pointer;display:block;margin:10px}
+#result{color:#fff;font-size:18px;margin-top:20px;text-align:center}
+</style>
+</head>
+<body>
+<div>
+  <button id="btn1">♟ Jeu local</button>
+  <button id="btn2">🤖 Contre IA</button>
+  <button id="btn3">📖 Règles</button>
+  <div id="result">Appuyez un bouton...</div>
+</div>
+<script>
+'use strict';
+window.addEventListener('load', function(){
+  document.getElementById('result').textContent = 'JS chargé ✅';
+  document.getElementById('btn1').addEventListener('click', function(){
+    document.getElementById('result').textContent = '✅ Jeu local marche!';
+  });
+  document.getElementById('btn2').addEventListener('click', function(){
+    document.getElementById('result').textContent = '✅ IA marche!';
+  });
+  document.getElementById('btn3').addEventListener('click', function(){
+    document.getElementById('result').textContent = '✅ Règles marche!';
+  });
+});
+</script>
+</body>
+</html>
