@@ -1481,7 +1481,7 @@ function checkOver(){
 // ============================================================
 // STATS GOOGLE SHEETS via Sheety
 // ============================================================
-const SHEETY_URL = 'https://api.sheety.co/f76edcad13d725c9792b66bce047c40d/dhamiéStats/parties';
+const SHEETY_URL = 'https://api.sheety.co/f76edcad13d725c9792b66bce047c40d/dhamieStats/parties';
 
 function sendGameStats(winnerName, byTime){
   try {
@@ -1503,11 +1503,16 @@ function sendGameStats(winnerName, byTime){
         soufla: G.soufla ? 'ON' : 'OFF'
       }
     };
+    console.log('📊 Envoi stats:', JSON.stringify(stats));
     fetch(SHEETY_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(stats)
-    }).catch(function(e){ console.log('Stats non envoyées:', e); });
+    }).then(function(r){ 
+      console.log('✅ Stats envoyées! Status:', r.status);
+      return r.text();
+    }).then(function(t){ console.log('Réponse:', t); })
+    .catch(function(e){ console.log('❌ Stats non envoyées:', e.message); });
   } catch(e) { console.log('Erreur stats:', e); }
 }
 
