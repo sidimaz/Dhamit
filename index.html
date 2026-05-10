@@ -333,7 +333,8 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
         <button class="lb" id="lar" onclick="setLang('ar')">عر</button>
       </div>
     </div>
-    <div class="ver">DHAMIÉ v6.7 • Sidimaz</div>
+          <button class="mbtn mbtn-dark" onclick="installPWA()" id="btn-pwa" style="display:none"><span>📲 Installer l'application</span></button>
+    <div class="ver">DHAMIÉ v6.9 • Sidimaz</div>
   </div>
 </div>
 
@@ -425,13 +426,13 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       </div>
       <div id="sfb" class="sfb" style="display:none">⚠ Soufla !</div>
       <div class="sttl2" id="sec-cap">Capturées</div>
-      <div>
-        <div style="font-size:.6rem;color:rgba(255,255,255,.3)" id="cap1l">🪄 a pris :</div>
-        <div class="caps" id="p1cap"></div>
-      </div>
       <div style="margin-top:4px">
-        <div style="font-size:.6rem;color:rgba(255,255,255,.3)" id="cap2l">🫘 a pris :</div>
-        <div class="caps" id="p2cap"></div>
+        <div style="font-size:.62rem;color:var(--gold-l);font-weight:600;margin-bottom:3px" id="cap1l">🪄 a pris :</div>
+        <div id="p1cap-count" style="font-size:1.1rem;font-weight:800;color:#F2C060;background:rgba(201,147,58,.15);border:1px solid rgba(201,147,58,.3);border-radius:6px;padding:3px 8px;text-align:center;min-width:32px;display:inline-block">0</div>
+      </div>
+      <div style="margin-top:6px">
+        <div style="font-size:.62rem;color:rgba(255,255,255,.5);font-weight:600;margin-bottom:3px" id="cap2l">🫘 a pris :</div>
+        <div id="p2cap-count" style="font-size:1.1rem;font-weight:800;color:#C8A060;background:rgba(100,70,30,.3);border:1px solid rgba(150,100,50,.3);border-radius:6px;padding:3px 8px;text-align:center;min-width:32px;display:inline-block">0</div>
       </div>
     </div>
 
@@ -518,7 +519,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
 <div id="panel-create" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px">
   <div class="fg">
     <label class="fl" id="on-lbl-name1">Votre nom</label>
-    <input class="fi" id="on-name1" type="text" placeholder="Votre nom" autocomplete="off">
+    <input class="fi" id="on-name1" type="text" placeholder="Votre nom" autocomplete="off" style="color:#FFF;background:rgba(255,255,255,.13)">
   </div>
   <button class="btn btn-p" onclick="onlineCreate()" id="on-btn-create" style="width:100%;font-size:1rem">
     <span id="on-create-btn-lbl">➕ Créer la salle</span>
@@ -529,7 +530,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
 <div id="panel-join" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;display:none">
   <div class="fg">
     <label class="fl" id="on-lbl-name2">Votre nom</label>
-    <input class="fi" id="on-name2" type="text" placeholder="Votre nom" autocomplete="off">
+    <input class="fi" id="on-name2" type="text" placeholder="Votre nom" autocomplete="off" style="color:#FFF;background:rgba(255,255,255,.13)">
   </div>
   <div class="fg">
     <label class="fl" id="on-lbl-code">Code reçu de votre ami</label>
@@ -928,6 +929,8 @@ function startGame(){
   G.startTime = Date.now();
   undoCooldown = false;
   undoPending = false;
+  // Réinitialiser audio pour iOS
+  if(_audioCtx&&_audioCtx.state==='suspended') _audioCtx.resume();
   if(tmin>0) startTimer();
   // AI plays GREEN (top). If AI goes first, trigger it.
   if(G.mode==='ai'&&G.turn==='green') setTimeout(aiTurn,900);
@@ -1056,8 +1059,10 @@ function updateUI(){
   document.getElementById('p2sul').textContent=(L==='ar'?'السلاطين:':'Sultans:')+' '+gs;
   document.getElementById('p1turn').textContent=t('pt');
   document.getElementById('p2turn').textContent=t('pt');
-  updCap('p1cap',G.capR,'dung');
-  updCap('p2cap',G.capG,'baton');
+  const c1=document.getElementById('p1cap-count');
+  const c2=document.getElementById('p2cap-count');
+  if(c1) c1.textContent=G.capR;
+  if(c2) c2.textContent=G.capG;
   document.getElementById('p1c').classList.toggle('on',G.turn==='red'&&!G.over);
   document.getElementById('p2c').classList.toggle('on',G.turn==='green'&&!G.over);
   document.getElementById('pbadge').textContent=G.phase==='atk'?t('at'):t('fl');
@@ -1149,10 +1154,11 @@ function handlePlay(c,r){
     doMove(G.sel,G.valid.find(m=>m.c===c&&m.r===r));return;
   }
   if(p&&p.t===G.turn){
-    if(G.chainPiece&&!(c===G.chainPiece.c&&r===G.chainPiece.r)&&G.soufla){
+    if(G.chainPiece&&!(c===G.chainPiece.c&&r===G.chainPiece.r)){
       const fp={c:G.chainPiece.c,r:G.chainPiece.r};
       G.sel=null;G.valid=[];G.chainPiece=null;
-      if(G.board[fp.r][fp.c]){triggerSoufla(G.turn,[fp]);return;}
+      if(G.soufla&&G.board[fp.r][fp.c]){triggerSoufla(G.turn,[fp]);return;}
+
     }
     G.sel={c,r};
     // ALWAYS show all moves — never block, no assistance
@@ -1197,12 +1203,30 @@ function doMove(from, to){
   // Sultan promotion
   if(p&&!p.s&&((p.t==='red'&&to.r===0)||(p.t==='green'&&to.r===BS-1))){
     p.s=true; toast(t('sb'),2000); flashCell(to.c,to.r,'rgba(255,215,0,.5)');
-    // Sultan nouvellement promu: fin du tour immédiat
     G.lastMove={fc:from.c,fr:from.r,tc:to.c,tr:to.r};
     G.log.push(cn(from)+'→'+cn(to)+(cap?'×'+cn(cap):''));
     G.mc++;
     if(G.phase==='atk'){G.phase='play';G.atkDone=true;toast(t('ae'),1700);}
-    G.sel=null;G.valid=[];G.chainPiece=null;
+    G.sel=null;G.valid=[];
+    // Sultan promu pendant une capture: peut continuer comme Kalb (pas à distance)
+    if(cap){
+      const moreAsKalb = pieceKillsAsKalb(to.c,to.r,p);
+      if(moreAsKalb.length>0){
+        G.sel={c:to.c,r:to.r};
+        G.valid=moreAsKalb;
+        G.chainPiece={c:to.c,r:to.r};
+        renderBoard();updateUI();toast(t('ch'),2000);
+        if(G.mode==='ai'&&G.turn==='green'){
+          setTimeout(function(){
+            if(G.chainPiece&&G.valid.length>0)
+              doMove({c:G.chainPiece.c,r:G.chainPiece.r},G.valid[Math.floor(Math.random()*G.valid.length)]);
+          },800);
+        }
+        return;
+      }
+    }
+    // Pas de suite possible: fin du tour
+    G.chainPiece=null;
     renderBoard();updateUI();
     switchTurn();
     return;
@@ -1217,23 +1241,27 @@ function doMove(from, to){
   if(cap && G.phase==='play'){
     const more = pieceKills(to.c, to.r, p);
     if(more.length>0){
-      // If receiving opponent move online, DON'T wait for interaction — just switch
       if(G.mode==='online'&&OL.receiving){
-        // Opponent will handle their own chain on their device
         G.sel=null; G.valid=[]; G.chainPiece=null;
         switchTurn(); return;
       }
+      // Soufla OFF: pas de clignotement, tour passé directement
+      if(!G.soufla){
+        G.sel=null; G.valid=[]; G.chainPiece=null;
+        switchTurn(); return;
+      }
+      // Soufla ON: forcer la continuation
       G.sel={c:to.c, r:to.r};
       G.valid=more;
       G.chainPiece={c:to.c, r:to.r};
-      renderBoard(); updateUI(); toast(t('ch'),1200);
+      renderBoard(); updateUI(); toast(t('ch'),2000);
       if(G.mode==='ai'&&G.turn==='green'){
         setTimeout(()=>{
           if(G.chainPiece&&G.valid.length>0)
-            doMove({c:G.chainPiece.c,r:G.chainPiece.r}, G.valid[Math.floor(Math.random()*G.valid.length)]);
-        },520);
+            doMove({c:G.chainPiece.c,r:G.chainPiece.r},G.valid[Math.floor(Math.random()*G.valid.length)]);
+        },800);
       }
-      return; // don't switch turn yet
+      return;
     }
   }
 
@@ -1347,11 +1375,6 @@ function execMove(from,to,cap){
     G.board[cap.r][cap.c]=null;
     p.t==='red'?G.capR++:G.capG++;
     flashCell(cap.c,cap.r,'rgba(255,80,80,.55)');
-    // Vérification immédiate de victoire après capture
-    let rc=0,gc=0;
-    for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){const pp=G.board[r][c];if(pp)pp.t==='red'?rc++:gc++;}
-    if(rc===0){setTimeout(()=>endGame('green'),100);return;}
-    if(gc===0){setTimeout(()=>endGame('red'),100);return;}
   }
   if(G.mode==='online'&&OL.active&&!OL.receiving){
     pushOnlineMove(from,to);
@@ -1362,11 +1385,12 @@ function switchTurn(){
   G.turn=G.turn==='red'?'green':'red';
   undoCooldown=false;
   undoPending=false;
+  MS.lastKillMap=buildKillMap(G.turn==='red'?'green':'red');
   if(!G.sfMode&&G.mode!=='ai') playSound('turn');
   renderBoard(); updateUI(); checkOver();
   updateReclamerButton();
   if(!G.over&&G.mode==='ai'&&G.turn==='green')
-    setTimeout(aiTurn, 480+Math.random()*350);
+    setTimeout(aiTurn, 100);
   // Online: broadcast turn sync
   if(G.mode==='online'&&OL.active&&!OL.receiving)
     OL.channel.publish('sync',{turn:G.turn,mc:G.mc,by:OL.role});
@@ -1469,6 +1493,49 @@ function pieceMoves(c,r,p){
   return mv;
 }
 
+
+
+function startChainSouflaTimer(piecePos){
+  if(G.soufla||G.mode==='ai') return;
+  if(G._chainTimer) clearTimeout(G._chainTimer);
+  G._chainTimer = setTimeout(function(){
+    G._chainTimer = null;
+    if(!G.soufla&&G.phase==='play'&&!MS.active&&!G.sfMode){
+      if(!G.board[piecePos.r]||!G.board[piecePos.r][piecePos.c]) return;
+      const p = G.board[piecePos.r][piecePos.c];
+      const moreKills = pieceKills(piecePos.c, piecePos.r, p);
+      if(moreKills.length > 0){
+        const opp = p.t==='red'?'green':'red';
+        const defName = opp==='red'?G.p1:G.p2;
+        const msgFr = '⏱ 15s — '+defName+' peut réclamer Soufla ! Double-tap sur '+cn(piecePos);
+        const msgAr = '⏱ 15 ثانية — '+defName+' يمكنه المطالبة! انقر مرتين على '+cn(piecePos);
+        const sfb = document.getElementById('sfb');
+        sfb.textContent = L==='ar'?msgAr:msgFr;
+        sfb.style.display = 'block';
+        flashCell(piecePos.c, piecePos.r, 'rgba(255,165,0,.6)');
+        // Activer double-tap sur cette pièce pour l'adversaire
+        MS.timerPos = piecePos;
+        setTimeout(function(){ 
+          if(!MS.active){ sfb.style.display='none'; MS.timerPos=null; }
+        }, 15000);
+      }
+    }
+  }, 15000);
+}
+
+function pieceKillsAsKalb(c,r,p){
+  // Captures comme un Kalb normal (mitoyenne, pas à distance)
+  // Utilisé pour le Sultan nouvellement promu en cours de chaîne
+  const mv=[],opp=p.t==='red'?'green':'red';
+  for(const [dr,dc] of allDirs(c,r)){
+    const mr=r+dr,mc2=c+dc,lr=r+2*dr,lc=c+2*dc;
+    if(mr>=0&&mr<BS&&mc2>=0&&mc2<BS&&lr>=0&&lr<BS&&lc>=0&&lc<BS)
+      if(G.board[mr][mc2]&&G.board[mr][mc2].t===opp&&!G.board[lr][lc])
+        mv.push({c:lc,r:lr,cap:{c:mc2,r:mr}});
+  }
+  return mv;
+}
+
 function pieceKills(c,r,p){
   const mv=[],opp=p.t==='red'?'green':'red';
   for(const [dr,dc] of allDirs(c,r)){
@@ -1555,6 +1622,7 @@ function sendGameStats(winnerName, byTime){
 }
 
 function endGame(w,byTime=false){
+  if(G.over) return; // Éviter double appel
   G.over=true;if(timerInt)clearInterval(timerInt);
   const wn=w==='red'?G.p1:G.p2;
   try{ sendGameStats(wn, byTime); }catch(e){}
@@ -1662,11 +1730,7 @@ const KATLA_COURTE_GREEN = {
 
 // Post-atkatila strategy: Tawyiba (most popular among experts)
 // D7 tukdima to be killed by F8, then D3 tukdima killed by F3, then D2 kills D4+D6
-const TAWYIBA = [
-  {from:bookCoord('D',7), to:bookCoord('D',6)},
-  {from:bookCoord('D',3), to:bookCoord('D',4)},
-  {from:bookCoord('D',2), to:bookCoord('D',3)},
-];
+
 
 let aiBookStep = 0;
 
@@ -1674,6 +1738,32 @@ let aiBookStep = 0;
 const AI_TIME = [0, 300, 800, 1800, 3500];
 let aiStartTime = 0;
 let aiTimeLimit = 1000;
+
+
+// ============================================================
+// LIVRE D'OUVERTURES IA
+// Basé sur le livre de Badih Ould Salem
+// ============================================================
+function bookCoord(letter, num){ return {r:'ABCDEFGHI'.indexOf(letter), c:num-1}; }
+
+// Katla Courte - séquence de l'IA (GREEN)
+const KATLA_VERTE = {
+  2: {from:bookCoord('G',3), to:bookCoord('F',3)},
+  4: {from:bookCoord('E',3), to:bookCoord('E',4)},
+  6: {from:bookCoord('D',3), to:bookCoord('D',4)},
+  8: {from:bookCoord('C',3), to:bookCoord('C',4)},
+  10:{from:bookCoord('G',4), to:bookCoord('F',4)},
+  12:{from:bookCoord('H',3), to:bookCoord('G',3)},
+};
+
+// Tawyiba - variante agressive
+const TAWYIBA = [
+  {from:bookCoord('D',6), to:bookCoord('D',5)},
+  {from:bookCoord('C',6), to:bookCoord('C',5)},
+  {from:bookCoord('E',6), to:bookCoord('E',5)},
+];
+
+
 
 function aiTurn(){
   if(G.over || G.turn !== 'green') return;
@@ -1684,9 +1774,14 @@ function aiTurn(){
     }
     return;
   }
+  // Livre d'ouvertures pour niveau 2+
+  if(G.aiLv >= 2){
+    const bookMv = getBookMove();
+    if(bookMv){ doMove(bookMv.from, bookMv.to); return; }
+  }
   const lvl=Math.min(G.aiLv,4);
-  const timeLimits=[0,600,2000,5000,8000];
-  const maxDepths=[0,2,4,6,8];
+  const timeLimits=[0,300,800,1500,3000];
+  const maxDepths=[0,2,3,4,6];
   aiTimeLimit=timeLimits[lvl];
   const maxDepth=maxDepths[lvl];
   if(lvl===1){
@@ -2109,8 +2204,15 @@ function updateReclamerButton(){
 }
 
 function reclamerSoufla(){
-  if(G.soufla||G.phase!=='play'||G.sfMode) return;
-  toast(L==='ar'?'انقر مرتين على القطعة الخاطئة':'Double-cliquez sur la pièce fautive',4000);
+  if(G.soufla||G.phase!=='play'||G.sfMode||MS.active) return;
+  const opp = G.turn==='red'?'green':'red';
+  const oppName = G.turn==='red'?G.p2:G.p1;
+  toast((L==='ar'?'🚨 '+oppName+' يطالب بسوفلة — انقر مرتين على القطعة الخاطئة':'🚨 '+oppName+' réclame Soufla — Double-tap sur la pièce fautive'),5000);
+  // Mettre en évidence les pièces adverses
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++){
+    const p=G.board[r][c];
+    if(p&&p.t===opp) flashCell(c,r,'rgba(255,140,0,.35)');
+  }
 }
 
 function confirmerSoufla(){
@@ -2141,9 +2243,31 @@ function checkManualSoufla(c,r){
 
 function confirmManualSoufla(){
   const pos=MS.pos;
-  flashCell(pos.c,pos.r,'rgba(255,60,60,.7)');
   const cb=document.getElementById('btn-confirmer');
   if(cb) cb.style.display='none';
+  // Vérifier que la pièce réclamée est vraiment fautive
+  // Elle doit avoir eu la possibilité de capturer au dernier coup
+  const p=G.board[pos.r]&&G.board[pos.r][pos.c];
+  if(!p){
+    MS={active:false,claimant:null,pos:null,lastTap:0,lastCell:null};
+    document.getElementById('sfb').style.display='none';
+    toast(L==='ar'?'القطعة غير موجودة':'Pièce introuvable',1500);
+    return;
+  }
+  // Vérifier: cette pièce peut-elle encore capturer? (chaîne incomplète)
+  // OU avait-elle des captures disponibles au moment du dernier coup?
+  const canCapture = pieceKills(pos.c, pos.r, p).length > 0;
+  const hadCaptures = MS.lastKillMap && MS.lastKillMap[pos.c+','+pos.r];
+  if(!canCapture && !hadCaptures){
+    // Fausse réclamation
+    MS={active:false,claimant:null,pos:null,lastTap:0,lastCell:null};
+    document.getElementById('sfb').style.display='none';
+    toast(L==='ar'?'❌ مطالبة خاطئة':'❌ Fausse réclamation !',2500);
+    flashCell(pos.c,pos.r,'rgba(0,200,100,.5)');
+    return;
+  }
+  // Réclamation valide
+  flashCell(pos.c,pos.r,'rgba(255,60,60,.7)');
   setTimeout(()=>{
     if(G.board[pos.r]&&G.board[pos.r][pos.c]){
       G.board[pos.r][pos.c]=null;
@@ -2159,72 +2283,87 @@ function confirmManualSoufla(){
 
 
 // ============================================================
-// SONS Web Audio API
+// SONS Web Audio API - Compatible iOS Safari
 // ============================================================
-let audioCtx = null;
+let _audioCtx = null;
 let soundsEnabled = true;
 try { soundsEnabled = localStorage.getItem('dhamiet-sounds') !== 'false'; } catch(e){}
 
-function initAudio(){
-  if(!audioCtx){
-    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+function _getAudio(){
+  if(!_audioCtx){
+    try{ _audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
   }
-  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return _audioCtx;
 }
 
-function playTone(freq, duration, type, volume){
+// iOS requiert création AudioContext dans un handler d'événement utilisateur
+function _ensureAudio(){
+  const ctx = _getAudio();
+  if(ctx && ctx.state === 'suspended'){
+    ctx.resume();
+  }
+  return ctx;
+}
+
+function playTone(freq, dur, type, vol){
   if(!soundsEnabled) return;
-  initAudio();
-  if(!audioCtx) return;
-  try {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type || 'sine';
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(volume || 0.15, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + duration);
-  } catch(e){}
+  const ctx = _ensureAudio();
+  if(!ctx) return;
+  try{
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type||'sine';
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(vol||0.15, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(ctx.currentTime);
+    o.stop(ctx.currentTime+dur);
+  }catch(e){}
 }
 
 function playSound(type){
   if(!soundsEnabled) return;
-  switch(type){
-    case 'move':
-      playTone(220, 0.08, 'square', 0.12);
-      break;
-    case 'capture':
-      playTone(440, 0.1, 'triangle', 0.18);
-      setTimeout(function(){ playTone(220, 0.2, 'sine', 0.12); }, 100);
-      break;
-    case 'turn':
-      playTone(523, 0.12, 'sine', 0.15);
-      break;
-    case 'victory':
-      playTone(523, 0.15, 'triangle', 0.2);
-      setTimeout(function(){ playTone(659, 0.15, 'triangle', 0.2); }, 150);
-      setTimeout(function(){ playTone(784, 0.15, 'triangle', 0.2); }, 300);
-      setTimeout(function(){ playTone(1047, 0.4, 'triangle', 0.2); }, 450);
-      break;
-    case 'soufla':
-      playTone(880, 0.1, 'square', 0.15);
-      setTimeout(function(){ playTone(440, 0.2, 'square', 0.12); }, 100);
-      break;
+  if(type==='move'){
+    playTone(280,0.06,'square',0.1);
+  } else if(type==='capture'){
+    playTone(440,0.08,'triangle',0.18);
+    setTimeout(()=>playTone(260,0.15,'sine',0.12),80);
+  } else if(type==='turn'){
+    playTone(520,0.1,'sine',0.13);
+  } else if(type==='victory'){
+    playTone(520,0.12,'triangle',0.18);
+    setTimeout(()=>playTone(660,0.12,'triangle',0.18),130);
+    setTimeout(()=>playTone(780,0.12,'triangle',0.18),260);
+    setTimeout(()=>playTone(1040,0.35,'triangle',0.18),390);
+  } else if(type==='soufla'){
+    playTone(880,0.08,'square',0.14);
+    setTimeout(()=>playTone(440,0.18,'square',0.1),90);
   }
 }
 
 function toggleSounds(){
+  // Créer AudioContext ici car c'est un geste utilisateur direct
+  if(!_audioCtx){
+    try{ _audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
   soundsEnabled = !soundsEnabled;
-  try { localStorage.setItem('dhamiet-sounds', soundsEnabled ? 'true' : 'false'); } catch(e){}
+  try{ localStorage.setItem('dhamiet-sounds', soundsEnabled?'true':'false'); }catch(e){}
   const btn = document.getElementById('sound-btn');
   if(btn) btn.textContent = soundsEnabled ? '🔊' : '🔇';
-  if(soundsEnabled){ initAudio(); playSound('turn'); }
+  if(soundsEnabled) playSound('turn');
   toast(soundsEnabled ? 'Sons activés 🔊' : 'Sons désactivés 🔇', 1500);
 }
 
-document.addEventListener('click', initAudio, {once: true});
-document.addEventListener('touchstart', initAudio, {once: true});
+// Créer AudioContext au premier tap (requis iOS)
+function _initAudioOnTap(){
+  if(!_audioCtx){
+    try{ _audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(_audioCtx && _audioCtx.state==='suspended') _audioCtx.resume();
+}
+document.addEventListener('touchstart', _initAudioOnTap, {once:false, passive:true});
+document.addEventListener('click', _initAudioOnTap, {once:false, passive:true});
 
 // ============================================================
 // MÉMOIRE IA
@@ -2374,6 +2513,37 @@ function sendFeedback(){
   });
 }
 
+
+// PWA Install
+let _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault(); _deferredPrompt = e;
+  const btn = document.getElementById('btn-pwa');
+  if(btn) btn.style.display = '';
+});
+
+function installPWA(){
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    showModal('📲','Installer','1) Partage ⬆️  2) Sur l\'ecran d\'accueil  3) Ajouter',[{tx:'OK',c:'btn-p',fn:''}]);
+    return;
+  }
+  if(_deferredPrompt){
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(()=>{ _deferredPrompt=null; });
+  }
+}
+
+// Afficher bouton PWA sur iOS automatiquement
+window.addEventListener('load', function(){
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone;
+  if(isIOS && !isStandalone){
+    const btn = document.getElementById('btn-pwa');
+    if(btn) btn.style.display = '';
+  }
+});
+
 function cn(pos){return 'ABCDEFGHI'[pos.r]+(pos.c+1);}
 
 function flashCell(c,r,color){
@@ -2447,11 +2617,24 @@ function makeCode(){return String(100000+Math.floor(Math.random()*900000));}
 // Load Ably SDK dynamically
 function loadAbly(cb){
   if(window.Ably){cb();return;}
-  const s=document.createElement('script');
-  s.src='https://cdn.ably.com/lib/ably.min-1.js';
-  s.onload=cb;
-  s.onerror=()=>onlineStatus(L==='ar'?'خطأ في التحميل':'Erreur de chargement');
-  document.head.appendChild(s);
+  // Essayer plusieurs CDNs
+  const cdns = [
+    'https://cdn.ably.com/lib/ably.min-1.js',
+    'https://cdn.jsdelivr.net/npm/ably@latest/ably.min.js'
+  ];
+  let tried = 0;
+  function tryNext(){
+    if(tried >= cdns.length){
+      onlineStatus(L==='ar'?'الشبكة محجوبة - تحقق من اتصالك':'Réseau bloqué - vérifiez votre connexion');
+      return;
+    }
+    const s=document.createElement('script');
+    s.src=cdns[tried++];
+    s.onload=function(){ if(window.Ably) cb(); else tryNext(); };
+    s.onerror=tryNext;
+    document.head.appendChild(s);
+  }
+  tryNext();
 }
 
 function onlineCreate(){
