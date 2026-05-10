@@ -326,7 +326,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       <button class="mbtn mbtn-dark" onclick="showScreen('rules-screen')"><span id="b-rules">📖 Règles du jeu</span></button>
       <button class="mbtn mbtn-gold" onclick="shareApp()"><span id="b-share">🔗 Partager l'application</span></button>
     </div>
-    <div class="ver">DHAMIÉ v6.5 • Sidimaz</div>
+    <div class="ver">DHAMIÉ v6.6 • Sidimaz</div>
   </div>
 </div>
 
@@ -389,7 +389,8 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       <button class="btn btn-s btn-sm" onclick="toggleSoufla()" id="btn-soufla-game" title="Soufla ON/OFF">⚡</button>
       <button class="btn btn-s btn-sm" onclick="reclamerSoufla()" id="btn-reclamer" title="Réclamer Soufla" style="display:none;background:rgba(255,100,0,.25);border-color:rgba(255,100,0,.6);color:#FF8040">🚨</button>
       <button class="btn btn-s btn-sm" onclick="confirmerSoufla()" id="btn-confirmer" title="Confirmer" style="display:none;background:rgba(0,200,80,.2);border-color:rgba(0,200,80,.5);color:#40FF80">✅</button>
-      <button class="btn btn-s btn-sm" onclick="undoMove()" id="b-undo">↩</button>
+      <button class="btn btn-s btn-sm" onclick="toggleSounds()" id="sound-btn">🔊</button>
+      <button class="btn btn-s btn-sm" onclick="requestUndo()" id="b-undo">↩</button>
       <button class="btn btn-s btn-sm" onclick="showShareModal()">🔗</button>
       <button class="btn btn-d btn-sm" onclick="confirmRestart()">↺</button>
     </div>
@@ -1148,6 +1149,7 @@ function doMove(from, to){
   saveState();
   const cap = to.cap||null;
   execMove(from, to, cap);
+  playSound(cap ? "capture" : "move");
   const p = G.board[to.r][to.c];
 
   // Sultan promotion
@@ -1325,6 +1327,7 @@ function execMove(from,to,cap){
 
 function switchTurn(){
   G.turn=G.turn==='red'?'green':'red';
+  if(!G.sfMode&&G.mode!=='ai') playSound('turn');
   renderBoard(); updateUI(); checkOver();
   updateReclamerButton();
   if(!G.over&&G.mode==='ai'&&G.turn==='green')
@@ -1520,6 +1523,12 @@ function endGame(w,byTime=false){
   G.over=true;if(timerInt)clearInterval(timerInt);
   const wn=w==='red'?G.p1:G.p2;
   try{ sendGameStats(wn, byTime); }catch(e){}
+  playSound('victory');
+  if(G.mode==='ai' && aiMoveHistory.length>0){
+    if(w==='green') rememberWin(aiMoveHistory);
+    else rememberLoss(aiMoveHistory);
+    aiMoveHistory=[];
+  }
   showModal(byTime?'⏰':'🏆',
     byTime?t('to'):t('wi'),
     byTime?t('tot',wn):t('wt',wn),
@@ -1673,8 +1682,11 @@ function aiTurn(){
     const score=-minimax2(nb,'red',maxDepth-1,-999999,999999,'green');
     if(score>bestScore){bestScore=score;bestMove=mv;}
   }
-  if(bestMove) doMove(bestMove.from,bestMove.to);
-  else if(allMvs.length>0) doMove(allMvs[0].from,allMvs[0].to);
+  // Mémoire: consulter
+  const memMove = consultMemory(G.board, 'green', allMvs);
+  if(memMove){ aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:memMove.from.c+','+memMove.from.r,to:memMove.to.c+','+memMove.to.r}); doMove(memMove.from,memMove.to); return; }
+  if(bestMove){ aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:bestMove.from.c+','+bestMove.from.r,to:bestMove.to.c+','+bestMove.to.r}); doMove(bestMove.from,bestMove.to); }
+  else if(allMvs.length>0){ aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:allMvs[0].from.c+','+allMvs[0].from.r,to:allMvs[0].to.c+','+allMvs[0].to.r}); doMove(allMvs[0].from,allMvs[0].to); }
 }
 
 function getSafeMoves(board,col){
@@ -2110,6 +2122,182 @@ function confirmManualSoufla(){
   },600);
 }
 
+
+// ============================================================
+// SONS Web Audio API
+// ============================================================
+let audioCtx = null;
+let soundsEnabled = true;
+try { soundsEnabled = localStorage.getItem('dhamiet-sounds') !== 'false'; } catch(e){}
+
+function initAudio(){
+  if(!audioCtx){
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+  }
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playTone(freq, duration, type, volume){
+  if(!soundsEnabled) return;
+  initAudio();
+  if(!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume || 0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + duration);
+  } catch(e){}
+}
+
+function playSound(type){
+  if(!soundsEnabled) return;
+  switch(type){
+    case 'move':
+      playTone(220, 0.08, 'square', 0.12);
+      break;
+    case 'capture':
+      playTone(440, 0.1, 'triangle', 0.18);
+      setTimeout(function(){ playTone(220, 0.2, 'sine', 0.12); }, 100);
+      break;
+    case 'turn':
+      playTone(523, 0.12, 'sine', 0.15);
+      break;
+    case 'victory':
+      playTone(523, 0.15, 'triangle', 0.2);
+      setTimeout(function(){ playTone(659, 0.15, 'triangle', 0.2); }, 150);
+      setTimeout(function(){ playTone(784, 0.15, 'triangle', 0.2); }, 300);
+      setTimeout(function(){ playTone(1047, 0.4, 'triangle', 0.2); }, 450);
+      break;
+    case 'soufla':
+      playTone(880, 0.1, 'square', 0.15);
+      setTimeout(function(){ playTone(440, 0.2, 'square', 0.12); }, 100);
+      break;
+  }
+}
+
+function toggleSounds(){
+  soundsEnabled = !soundsEnabled;
+  try { localStorage.setItem('dhamiet-sounds', soundsEnabled ? 'true' : 'false'); } catch(e){}
+  const btn = document.getElementById('sound-btn');
+  if(btn) btn.textContent = soundsEnabled ? '🔊' : '🔇';
+  if(soundsEnabled){ initAudio(); playSound('turn'); }
+  toast(soundsEnabled ? 'Sons activés 🔊' : 'Sons désactivés 🔇', 1500);
+}
+
+document.addEventListener('click', initAudio, {once: true});
+document.addEventListener('touchstart', initAudio, {once: true});
+
+// ============================================================
+// MÉMOIRE IA
+// ============================================================
+let AI_MEMORY = {positions:{}, stats:{games:0,wins:0,losses:0}};
+let aiMoveHistory = [];
+
+function loadMemory(){
+  try {
+    const raw = localStorage.getItem('dhamiet_ai_brain');
+    if(raw) AI_MEMORY = JSON.parse(raw);
+    if(!AI_MEMORY.positions) AI_MEMORY.positions = {};
+    if(!AI_MEMORY.stats) AI_MEMORY.stats = {games:0,wins:0,losses:0};
+  } catch(e){}
+}
+
+function saveMemory(){
+  try { localStorage.setItem('dhamiet_ai_brain', JSON.stringify(AI_MEMORY)); } catch(e){}
+}
+
+function hashBoard(board, turn){
+  let h = turn==='green'?'G':'R';
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++){
+    const p=board[r][c];
+    h += p?(p.t==='red'?'R':'G')+(p.s?'S':'K'):'.';
+  }
+  return h;
+}
+
+function rememberWin(history){
+  for(const m of history){
+    const key=hashBoard(m.board, m.turn);
+    if(!AI_MEMORY.positions[key]) AI_MEMORY.positions[key]={};
+    const mk=m.from+'-'+m.to;
+    if(!AI_MEMORY.positions[key][mk]) AI_MEMORY.positions[key][mk]={w:0,l:0,p:0};
+    AI_MEMORY.positions[key][mk].w++;
+    AI_MEMORY.positions[key][mk].p++;
+  }
+  AI_MEMORY.stats.wins++; AI_MEMORY.stats.games++;
+  // Limiter à 2000 entrées
+  const keys = Object.keys(AI_MEMORY.positions);
+  if(keys.length > 2000) delete AI_MEMORY.positions[keys[0]];
+  saveMemory();
+}
+
+function rememberLoss(history){
+  for(const m of history){
+    const key=hashBoard(m.board, m.turn);
+    if(!AI_MEMORY.positions[key]) AI_MEMORY.positions[key]={};
+    const mk=m.from+'-'+m.to;
+    if(!AI_MEMORY.positions[key][mk]) AI_MEMORY.positions[key][mk]={w:0,l:0,p:0};
+    AI_MEMORY.positions[key][mk].l++;
+    AI_MEMORY.positions[key][mk].p++;
+  }
+  AI_MEMORY.stats.losses++; AI_MEMORY.stats.games++;
+  saveMemory();
+}
+
+function consultMemory(board, turn, moves){
+  const key=hashBoard(board, turn);
+  const stored=AI_MEMORY.positions[key];
+  if(!stored) return null;
+  let best=null, bestScore=-1;
+  for(const mv of moves){
+    const mk=mv.from.c+','+mv.from.r+'-'+mv.to.c+','+mv.to.r;
+    if(stored[mk] && stored[mk].p >= 2){
+      const ratio = stored[mk].w / stored[mk].p;
+      if(ratio > bestScore){ bestScore=ratio; best=mv; }
+    }
+  }
+  return (best && bestScore > 0.6) ? best : null;
+}
+
+// ============================================================
+// UNDO AVEC CONFIRMATION
+// ============================================================
+let undoPending = false;
+let undoCooldown = false;
+
+function requestUndo(){
+  if(G.over || G.hist.length===0){ toast(t('cu'), 1400); return; }
+  if(undoCooldown){ toast(L==='ar'?'العب نقلة قبل التراجع مجدداً':'Jouez un coup avant de redemander', 2000); return; }
+  if(undoPending) return;
+  if(G.mode==='ai'){
+    undoMove(); return;
+  }
+  if(G.mode==='local'){
+    const requester = G.turn==='red' ? G.p1 : G.p2;
+    const opponent = G.turn==='red' ? G.p2 : G.p1;
+    undoPending = true;
+    showModal('↩',
+      L==='ar'?'طلب تراجع':"Demande d'annulation",
+      (L==='ar'?requester+' يطلب التراجع. ':requester+' demande à annuler. ')+(L==='ar'?opponent+'، هل تقبل؟':opponent+', acceptez-vous ?'),
+      [{tx:'✅ Oui', c:'btn-p', fn:'acceptUndo()'},
+       {tx:'❌ Non', c:'btn-d', fn:'refuseUndo()'}]
+    );
+  }
+}
+
+function acceptUndo(){
+  undoPending=false; closeModal(); undoMove(); undoCooldown=true;
+}
+
+function refuseUndo(){
+  undoPending=false; closeModal();
+  toast(L==='ar'?'رُفض التراجع':'Annulation refusée', 1800);
+}
+
 function cn(pos){return 'ABCDEFGHI'[pos.r]+(pos.c+1);}
 
 function flashCell(c,r,color){
@@ -2413,6 +2601,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='z')undoMove();
 });
 window.addEventListener('load',()=>{
+  loadMemory();
   setLang('fr');
   showOnlineTab('create');
 });
