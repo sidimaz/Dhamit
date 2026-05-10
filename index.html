@@ -334,7 +334,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       </div>
     </div>
           <button class="mbtn mbtn-dark" onclick="installPWA()" id="btn-pwa" style="display:none"><span>📲 Installer l'application</span></button>
-    <div class="ver">DHAMIÉ v6.9 • Sidimaz</div>
+    <div class="ver">DHAMIÉ v7.0 • Sidimaz</div>
   </div>
 </div>
 
@@ -2205,13 +2205,19 @@ function updateReclamerButton(){
 
 function reclamerSoufla(){
   if(G.soufla||G.phase!=='play'||G.sfMode||MS.active) return;
-  const opp = G.turn==='red'?'green':'red';
-  const oppName = G.turn==='red'?G.p2:G.p1;
-  toast((L==='ar'?'🚨 '+oppName+' يطالب بسوفلة — انقر مرتين على القطعة الخاطئة':'🚨 '+oppName+' réclame Soufla — Double-tap sur la pièce fautive'),5000);
-  // Mettre en évidence les pièces adverses
+  // C'est le joueur qui vient de SUBIR un coup qui réclame
+  // donc c'est l'adversaire du joueur actuel (qui vient de jouer)
+  // G.turn = joueur qui doit jouer maintenant = celui qui réclame
+  const claimant = G.turn; // celui qui réclame = attend son tour
+  const claimantName = G.turn==='red'?G.p1:G.p2;
+  const faultyColor = G.turn==='red'?'green':'red'; // pièces fautives = adversaire
+  toast((L==='ar'?
+    '🚨 '+claimantName+' يطالب — انقر مرتين على قطعة '+( G.turn==='red'?G.p2:G.p1)+' الخاطئة':
+    '🚨 '+claimantName+' réclame — Double-tap sur la pièce fautive de '+(G.turn==='red'?G.p2:G.p1)),5000);
+  // Mettre en évidence les pièces adverses (fautives potentielles)
   for(let r=0;r<9;r++) for(let c=0;c<9;c++){
     const p=G.board[r][c];
-    if(p&&p.t===opp) flashCell(c,r,'rgba(255,140,0,.35)');
+    if(p&&p.t===faultyColor) flashCell(c,r,'rgba(255,140,0,.4)');
   }
 }
 
@@ -2536,8 +2542,11 @@ function installPWA(){
 
 // Afficher bouton PWA sur iOS automatiquement
 window.addEventListener('load', function(){
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone;
+  // Détecter iOS incluant iPad avec iPadOS (qui se déclare comme Mac)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) 
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isStandalone = window.navigator.standalone 
+    || window.matchMedia('(display-mode: standalone)').matches;
   if(isIOS && !isStandalone){
     const btn = document.getElementById('btn-pwa');
     if(btn) btn.style.display = '';
@@ -2573,12 +2582,21 @@ function closeModal(){document.getElementById('mo').classList.remove('show');}
 
 function toggleSoufla(){
   G.soufla=!G.soufla;
+  updateSouflaBtn();
+  toast((G.soufla?(L==='ar'?'السوفلة مفعّلة ✓':'Soufla activée ✓'):(L==='ar'?'السوفلة معطّلة':'Soufla désactivée')),1500);
+  updateReclamerButton();
+  // Synchroniser en ligne
+  if(G.mode==='online'&&OL.active&&OL.channel){
+    OL.channel.publish('soufla-toggle',{soufla:G.soufla,by:OL.role});
+  }
+}
+
+function updateSouflaBtn(){
   const btn=document.getElementById('btn-soufla-game');
+  if(!btn) return;
   btn.style.background=G.soufla?'rgba(255,165,0,.3)':'rgba(255,255,255,.08)';
   btn.style.borderColor=G.soufla?'rgba(255,165,0,.6)':'rgba(255,255,255,.2)';
   btn.style.color=G.soufla?'#FFB040':'var(--sand)';
-  toast((G.soufla?(L==='ar'?'السوفلة مفعّلة ✓':'Soufla activée ✓'):(L==='ar'?'السوفلة معطّلة':'Soufla désactivée')),1500);
-  updateReclamerButton();
 }
 function confirmQuit(){
   showModal('🚪',t('qt'),t('qx'),[
@@ -2665,6 +2683,22 @@ function onlineCreate(){
           }
           doMove(msg.data.from,msg.data.to);
           OL.receiving=false;
+        }
+      });
+      ch.subscribe('soufla-toggle',(msg)=>{
+        if(msg.data.by!==OL.role){
+          G.soufla=msg.data.soufla;
+          updateSouflaBtn();
+          updateReclamerButton();
+          toast((G.soufla?(L==='ar'?'السوفلة مفعّلة':'Soufla activée'):(L==='ar'?'السوفلة معطّلة':'Soufla désactivée')),1500);
+        }
+      });
+      ch.subscribe('soufla-toggle',(msg)=>{
+        if(msg.data.by!==OL.role){
+          G.soufla=msg.data.soufla;
+          updateSouflaBtn();
+          updateReclamerButton();
+          toast((G.soufla?(L==='ar'?'السوفلة مفعّلة':'Soufla activée'):(L==='ar'?'السوفلة معطّلة':'Soufla désactivée')),1500);
         }
       });
       ch.subscribe('soufla',(msg)=>{
