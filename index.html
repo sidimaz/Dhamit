@@ -25,9 +25,9 @@ body[lang="ar"]{direction:rtl;font-family:'Cairo',sans-serif}
 .screen.active{display:flex;flex-direction:column}
 
 /* –– LANG –– */
-.lbar{position:fixed;top:10px;right:10px;z-index:99;display:flex;
+.lbar{display:inline-flex;
 background:rgba(0,0,0,.75);border:1px solid rgba(201,147,58,.5);border-radius:8px;overflow:hidden}
-body[lang=“ar”] .lbar{right:auto;left:10px}
+body[lang=“ar”] .lbar{direction:ltr;left:10px}
 .lb{padding:6px 13px;border:none;background:transparent;color:var(–sand);
 cursor:pointer;font-size:.75rem;font-weight:600;font-family:inherit}
 .lb.on{background:var(–gold);color:var(–deep)}
@@ -325,6 +325,13 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       <button class="mbtn mbtn-gold" onclick="showScreen('online-screen')"><span id="b-online">🌐 Jouer en ligne (2 appareils)</span></button>
       <button class="mbtn mbtn-dark" onclick="showScreen('rules-screen')"><span id="b-rules">📖 Règles du jeu</span></button>
       <button class="mbtn mbtn-gold" onclick="shareApp()"><span id="b-share">🔗 Partager l'application</span></button>
+      <button class="mbtn mbtn-dark" onclick="showFeedback()"><span id="b-feedback">💬 Feedback</span></button>
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:10px">
+      <div class="lbar">
+        <button class="lb on" id="lfr" onclick="setLang('fr')">FR</button>
+        <button class="lb" id="lar" onclick="setLang('ar')">عر</button>
+      </div>
     </div>
     <div class="ver">DHAMIÉ v6.7 • Sidimaz</div>
   </div>
@@ -577,6 +584,39 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
   </div>
   <div style="text-align:center;margin:16px 0 24px">
     <button class="btn btn-p" onclick="showScreen('menu-screen')" id="b-rm">← Menu</button>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+
+<div id="feedback-screen" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;gap:14px;overflow-y:auto;background:var(--deep)">
+    <div style="font-family:'Amiri',serif;font-size:1.8rem;color:var(--gold);text-align:center">💬 Feedback</div>
+    <div style="font-size:.82rem;color:var(--sand);text-align:center;max-width:380px;line-height:1.7">
+      Bug ? Suggestion ? Avis ?<br>Votre message va directement à Sidimaz.
+    </div>
+    <div style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px">
+      <div class="fg">
+        <label class="fl">Votre nom (optionnel)</label>
+        <input class="fi" id="fb-name" type="text" placeholder="Anonyme" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label class="fl">Type</label>
+        <select class="fs" id="fb-type">
+          <option value="bug">🐛 Bug</option>
+          <option value="suggestion">💡 Suggestion</option>
+          <option value="compliment">❤️ Compliment</option>
+          <option value="autre">📝 Autre</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Message</label>
+        <textarea class="fi" id="fb-msg" rows="5" placeholder="Votre message..." style="resize:vertical;min-height:100px;font-family:inherit"></textarea>
+      </div>
+      <button class="btn btn-p" onclick="sendFeedback()" style="width:100%">📤 Envoyer</button>
+      <div id="fb-status" style="text-align:center;color:var(--gold-l);font-size:.85rem;display:none"></div>
+      <button class="btn btn-g" onclick="showScreen('menu-screen')" style="width:100%">← Retour</button>
+    </div>
   </div>
 </div>
 
@@ -2291,6 +2331,47 @@ function acceptUndo(){
 function refuseUndo(){
   undoPending=false; closeModal();
   toast(L==='ar'?'رُفض التراجع':'Annulation refusée', 1800);
+}
+
+
+function showFeedback(){
+  showScreen('feedback-screen');
+  const s=document.getElementById('fb-status');
+  if(s) s.style.display='none';
+}
+
+function sendFeedback(){
+  const name = document.getElementById('fb-name').value.trim() || 'Anonyme';
+  const type = document.getElementById('fb-type').value;
+  const msg = document.getElementById('fb-msg').value.trim();
+  const statusEl = document.getElementById('fb-status');
+  const btn = event.target;
+  if(!msg || msg.length < 3){
+    statusEl.style.display='block';
+    statusEl.style.color='#FF8060';
+    statusEl.textContent = '⚠ Écrivez votre message d\'abord';
+    return;
+  }
+  btn.disabled = true;
+  statusEl.style.display='block';
+  statusEl.style.color='var(--gold-l)';
+  statusEl.textContent = '⏳ Envoi en cours...';
+  fetch('https://formspree.io/f/xpqbjrvv', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+    body: JSON.stringify({nom: name, type: type, message: msg, version: 'v6.7', date: new Date().toLocaleDateString()})
+  }).then(function(r){
+    if(r.ok){
+      statusEl.style.color='#7CFF7C';
+      statusEl.textContent = '✅ Envoyé ! Merci';
+      document.getElementById('fb-msg').value = '';
+      setTimeout(function(){ showScreen('menu-screen'); }, 2000);
+    } else { throw new Error('Erreur'); }
+  }).catch(function(){
+    statusEl.style.color='#FF8060';
+    statusEl.textContent = '❌ Erreur. Réessayez.';
+    btn.disabled = false;
+  });
 }
 
 function cn(pos){return 'ABCDEFGHI'[pos.r]+(pos.c+1);}
