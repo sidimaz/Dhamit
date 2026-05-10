@@ -326,7 +326,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       <button class="mbtn mbtn-dark" onclick="showScreen('rules-screen')"><span id="b-rules">📖 Règles du jeu</span></button>
       <button class="mbtn mbtn-gold" onclick="shareApp()"><span id="b-share">🔗 Partager l'application</span></button>
     </div>
-    <div class="ver">DHAMIÉ v6.6 • Sidimaz</div>
+    <div class="ver">DHAMIÉ v6.7 • Sidimaz</div>
   </div>
 </div>
 
@@ -886,6 +886,8 @@ function startGame(){
     sb.style.borderColor=G.soufla?'rgba(255,165,0,.6)':'rgba(255,255,255,.2)';
     sb.style.color=G.soufla?'#FFB040':'var(--sand)';}
   G.startTime = Date.now();
+  undoCooldown = false;
+  undoPending = false;
   if(tmin>0) startTimer();
   // AI plays GREEN (top). If AI goes first, trigger it.
   if(G.mode==='ai'&&G.turn==='green') setTimeout(aiTurn,900);
@@ -1155,6 +1157,15 @@ function doMove(from, to){
   // Sultan promotion
   if(p&&!p.s&&((p.t==='red'&&to.r===0)||(p.t==='green'&&to.r===BS-1))){
     p.s=true; toast(t('sb'),2000); flashCell(to.c,to.r,'rgba(255,215,0,.5)');
+    // Sultan nouvellement promu: fin du tour immédiat
+    G.lastMove={fc:from.c,fr:from.r,tc:to.c,tr:to.r};
+    G.log.push(cn(from)+'→'+cn(to)+(cap?'×'+cn(cap):''));
+    G.mc++;
+    if(G.phase==='atk'){G.phase='play';G.atkDone=true;toast(t('ae'),1700);}
+    G.sel=null;G.valid=[];G.chainPiece=null;
+    renderBoard();updateUI();
+    switchTurn();
+    return;
   }
   G.lastMove={fc:from.c, fr:from.r, tc:to.c, tr:to.r};
   G.log.push(cn(from)+'→'+cn(to)+(cap?'×'+cn(cap):''));
@@ -1259,54 +1270,36 @@ function pieceKillsOnBoard(board,c,r,p){
 
 // Returns array of faulty piece positions, or null if no soufla
 function checkSoufla(from, to, cap, killMap){
-  if(!Object.keys(killMap).length) return null; // no kills were available
-
-  // Find the maximum chain length available to any piece before the move
-  let globalMax=0;
-  for(const v of Object.values(killMap)) if(v>globalMax) globalMax=v;
-
-  // How many captures did the moving piece actually achieve in this move?
-  // (cap=1 capture this move; chain is offered separately)
-  const actualCaps = cap ? 1 : 0;
-
-  // The moving piece's max chain before the move
-  const movingKey=from.c+','+from.r;
-  const movingMax=killMap[movingKey]||0;
-
-  const faulty=[];
-
-  // CASE 1: No capture made, but kills were available
+  if(!Object.keys(killMap).length) return null;
+  const movingKey = from.c+','+from.r;
+  const movingMax = killMap[movingKey] || 0;
+  let globalMax = 0;
+  for(const v of Object.values(killMap)) if(v > globalMax) globalMax = v;
+  const faulty = [];
   if(!cap){
-    for(const [key,val] of Object.entries(killMap)){
-      const [kc,kr]=key.split(',').map(Number);
-      // The piece that moved is now at `to`
-      const curC=(kc===from.c&&kr===from.r)?to.c:kc;
-      const curR=(kc===from.c&&kr===from.r)?to.r:kr;
-      if(G.board[curR]&&G.board[curR][curC]&&
-         !faulty.some(x=>x.c===curC&&x.r===curR))
+    // Pas de capture alors que possible -> soufla sur toutes les pièces fautives
+    for(const [key] of Object.entries(killMap)){
+      const [kc,kr] = key.split(',').map(Number);
+      const curC = (kc===from.c&&kr===from.r)?to.c:kc;
+      const curR = (kc===from.c&&kr===from.r)?to.r:kr;
+      if(G.board[curR]&&G.board[curR][curC]&&!faulty.some(x=>x.c===curC&&x.r===curR))
         faulty.push({c:curC,r:curR});
     }
     return faulty.length?faulty:null;
   }
-
-  // CASE 2: Capture made, but another piece had MORE captures available
-  // The ignored piece (with more kills) is penalized
-  if(cap){
-    for(const [key,val] of Object.entries(killMap)){
-      const [kc,kr]=key.split(',').map(Number);
-      if(kc===from.c&&kr===from.r) continue; // skip the piece that moved
-      if(val>movingMax){
-        // This piece had more capture potential and was ignored
-        if(G.board[kr]&&G.board[kr][kc]&&!faulty.some(x=>x.c===kc&&x.r===kr))
-          faulty.push({c:kc,r:kr});
-      }
+  // Capture faite: soufla seulement si une AUTRE pièce pouvait capturer STRICTEMENT PLUS
+  // Règle du nombre égal: si movingMax >= globalMax -> libre choix -> pas de soufla
+  if(movingMax >= globalMax) return null;
+  for(const [key,val] of Object.entries(killMap)){
+    const [kc,kr] = key.split(',').map(Number);
+    if(kc===from.c&&kr===from.r) continue;
+    if(val > movingMax){
+      if(G.board[kr]&&G.board[kr][kc]&&!faulty.some(x=>x.c===kc&&x.r===kr))
+        faulty.push({c:kc,r:kr});
     }
-    return faulty.length?faulty:null;
   }
-
-  return null;
+  return faulty.length?faulty:null;
 }
-
 function execMove(from,to,cap){
   const p=G.board[from.r][from.c];
   G.board[to.r][to.c]=p; G.board[from.r][from.c]=null;
@@ -1327,6 +1320,8 @@ function execMove(from,to,cap){
 
 function switchTurn(){
   G.turn=G.turn==='red'?'green':'red';
+  undoCooldown=false;
+  undoPending=false;
   if(!G.sfMode&&G.mode!=='ai') playSound('turn');
   renderBoard(); updateUI(); checkOver();
   updateReclamerButton();
