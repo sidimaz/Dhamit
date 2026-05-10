@@ -884,6 +884,7 @@ function startGame(){
   if(sb){sb.style.background=G.soufla?'rgba(255,165,0,.3)':'rgba(255,255,255,.08)';
     sb.style.borderColor=G.soufla?'rgba(255,165,0,.6)':'rgba(255,255,255,.2)';
     sb.style.color=G.soufla?'#FFB040':'var(--sand)';}
+  G.startTime = Date.now();
   if(tmin>0) startTimer();
   // AI plays GREEN (top). If AI goes first, trigger it.
   if(G.mode==='ai'&&G.turn==='green') setTimeout(aiTurn,900);
@@ -1476,9 +1477,44 @@ function checkOver(){
   endGame(G.turn==='red'?'green':'red');
 }
 
+
+// ============================================================
+// STATS GOOGLE SHEETS via Sheety
+// ============================================================
+const SHEETY_URL = 'https://api.sheety.co/f76edcad13d725c9792b66bce047c40d/dhamiéStats/parties';
+
+function sendGameStats(winnerName, byTime){
+  try {
+    const durationMs = G.startTime ? (Date.now() - G.startTime) : 0;
+    const durationSec = Math.floor(durationMs / 1000);
+    const dMin = Math.floor(durationSec / 60);
+    const dSec = durationSec % 60;
+    const stats = {
+      partie: {
+        date: new Date().toLocaleDateString('fr-FR'),
+        mode: G.mode || 'local',
+        joueur1: G.p1 || 'J1',
+        joueur2: G.p2 || 'J2',
+        gagnant: winnerName + (byTime ? ' (temps)' : ''),
+        coups: G.mc || 0,
+        duree: dMin + 'm ' + dSec + 's',
+        niveauIa: G.mode === 'ai' ? G.aiLv : '',
+        langue: L || 'fr',
+        soufla: G.soufla ? 'ON' : 'OFF'
+      }
+    };
+    fetch(SHEETY_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(stats)
+    }).catch(function(e){ console.log('Stats non envoyées:', e); });
+  } catch(e) { console.log('Erreur stats:', e); }
+}
+
 function endGame(w,byTime=false){
   G.over=true;if(timerInt)clearInterval(timerInt);
   const wn=w==='red'?G.p1:G.p2;
+  try{ sendGameStats(wn, byTime); }catch(e){}
   showModal(byTime?'⏰':'🏆',
     byTime?t('to'):t('wi'),
     byTime?t('tot',wn):t('wt',wn),
