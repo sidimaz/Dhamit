@@ -334,7 +334,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       </div>
     </div>
           <button class="mbtn mbtn-dark" onclick="installPWA()" id="btn-pwa" style="display:none"><span>📲 Installer l'application</span></button>
-    <div class="ver">DHAMIÉ v7.3 • Sidimaz</div>
+    <div class="ver">DHAMIÉ v7.4 • Sidimaz</div>
   </div>
 </div>
 
@@ -1674,6 +1674,66 @@ function sendGFormStats(winnerName, byTime){
   } catch(e){}
 }
 
+
+// ============================================================
+// TRACKING VISITEURS (pays, ville, langue)
+// ============================================================
+const GFORM_VISIT_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe9iEABXdCUue_7krbDsXiMmCJDRwQhuTnogb9PFLiPMaJ_Pw/formResponse';
+
+function trackVisitor(){
+  // Éviter de tracker plusieurs fois la même session
+  try {
+    const lastVisit = localStorage.getItem('dhamiet_last_visit');
+    const now = Date.now();
+    if(lastVisit && (now - parseInt(lastVisit)) < 3600000) return; // 1h minimum entre visites
+    localStorage.setItem('dhamiet_last_visit', now);
+  } catch(e){}
+  
+  // Récupérer la géolocalisation via ipapi.co (gratuit)
+  fetch('https://ipapi.co/json/')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      const params = new URLSearchParams();
+      params.append('entry.453748403', new Date().toLocaleDateString('fr-FR')); // date
+      params.append('entry.399167631', 'visite'); // mode = visite
+      params.append('entry.259663987', data.city || 'inconnu'); // joueur1 = ville
+      params.append('entry.1177109810', data.country_name || 'inconnu'); // joueur2 = pays
+      params.append('entry.151761107', data.country_code || ''); // gagnant = code pays
+      params.append('entry.714313404', '0'); // coups = 0
+      params.append('entry.889008628', '0m 0s'); // duree
+      params.append('entry.89485309', ''); // niveauIa
+      params.append('entry.2064644584', navigator.language || 'fr'); // langue navigateur
+      params.append('entry.1027578855', data.timezone || ''); // soufla = timezone
+      
+      fetch(GFORM_VISIT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
+      }).catch(function(){});
+    })
+    .catch(function(){
+      // Si ipapi bloqué, envoyer quand même sans géolocalisation
+      const params = new URLSearchParams();
+      params.append('entry.453748403', new Date().toLocaleDateString('fr-FR'));
+      params.append('entry.399167631', 'visite');
+      params.append('entry.259663987', 'inconnu');
+      params.append('entry.1177109810', 'inconnu');
+      params.append('entry.151761107', '');
+      params.append('entry.714313404', '0');
+      params.append('entry.889008628', '0m 0s');
+      params.append('entry.89485309', '');
+      params.append('entry.2064644584', navigator.language || 'fr');
+      params.append('entry.1027578855', '');
+      fetch(GFORM_VISIT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
+      }).catch(function(){});
+    });
+}
+
 function endGame(w,byTime=false){
   if(G.over) return; // Éviter double appel
   G.over=true;if(timerInt)clearInterval(timerInt);
@@ -2955,6 +3015,8 @@ document.addEventListener('keydown',e=>{
 });
 window.addEventListener('load',()=>{
   loadMemory();
+  // Tracker le visiteur
+  setTimeout(trackVisitor, 2000);
   setLang('fr');
   showOnlineTab('create');
 });
