@@ -334,7 +334,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       </div>
     </div>
           <button class="mbtn mbtn-dark" onclick="installPWA()" id="btn-pwa" style="display:none"><span>📲 Installer l'application</span></button>
-    <div class="ver">DHAMIÉ v7.1 • Sidimaz</div>
+    <div class="ver">DHAMIÉ v7.2 • Sidimaz</div>
   </div>
 </div>
 
@@ -929,6 +929,7 @@ function startGame(){
   G.startTime = Date.now();
   undoCooldown = false;
   undoPending = false;
+  aiMoveHistory = [];
   // Réinitialiser audio pour iOS
   if(_audioCtx&&_audioCtx.state==='suspended') _audioCtx.resume();
   if(tmin>0) startTimer();
@@ -1267,11 +1268,17 @@ function doMove(from, to){
 
   // ---- SOUFLA CHECK (skip when receiving opponent move online) ----
   if(G.soufla&&G.phase==='play'&&!(G.mode==='online'&&OL.receiving)){
-    const faultyPos = checkSoufla(from, to, cap, killMap);
-    if(faultyPos){
-      G.chainPiece=null;
-      triggerSoufla(G.turn, faultyPos);
-      return;
+    // Ne pas vérifier soufla sur le coup de l'IA (elle joue toujours correctement)
+    const justPlayedColor = G.turn==='red'?'green':'red';
+    if(G.mode==='ai'&&justPlayedColor==='green'){
+      // L'IA vient de jouer - pas de soufla contre elle
+    } else {
+      const faultyPos = checkSoufla(from, to, cap, killMap);
+      if(faultyPos){
+        G.chainPiece=null;
+        triggerSoufla(G.turn, faultyPos);
+        return;
+      }
     }
   }
 
@@ -1390,7 +1397,7 @@ function switchTurn(){
   renderBoard(); updateUI(); checkOver();
   updateReclamerButton();
   if(!G.over&&G.mode==='ai'&&G.turn==='green')
-    setTimeout(aiTurn, 100);
+    setTimeout(aiTurn, 600+Math.random()*400);
   // Online: broadcast turn sync
   if(G.mode==='online'&&OL.active&&!OL.receiving)
     OL.channel.publish('sync',{turn:G.turn,mc:G.mc,by:OL.role});
@@ -2948,4 +2955,4 @@ window.addEventListener('load',()=>{
 </script>
 
 </body>
-</html>h
+</html>
