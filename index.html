@@ -334,7 +334,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       </div>
     </div>
           <button class="mbtn mbtn-dark" onclick="installPWA()" id="btn-pwa" style="display:none"><span>📲 Installer l'application</span></button>
-    <div class="ver">DHAMIÉ v7.2 • Sidimaz</div>
+    <div class="ver">DHAMIÉ v7.3 • Sidimaz</div>
   </div>
 </div>
 
@@ -1828,11 +1828,7 @@ function aiTurn(){
     }
     return;
   }
-  // Livre d'ouvertures pour niveau 2+
-  if(G.aiLv >= 2){
-    const bookMv = getBookMove();
-    if(bookMv){ doMove(bookMv.from, bookMv.to); return; }
-  }
+  // Livre d'ouvertures désactivé
   const lvl=Math.min(G.aiLv,4);
   const timeLimits=[0,300,800,1500,3000];
   const maxDepths=[0,2,3,4,6];
@@ -1869,8 +1865,26 @@ function aiTurn(){
   // Mémoire: consulter
   const memMove = consultMemory(G.board, 'green', allMvs);
   if(memMove){ aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:memMove.from.c+','+memMove.from.r,to:memMove.to.c+','+memMove.to.r}); doMove(memMove.from,memMove.to); return; }
-  if(bestMove){ aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:bestMove.from.c+','+bestMove.from.r,to:bestMove.to.c+','+bestMove.to.r}); doMove(bestMove.from,bestMove.to); }
-  else if(allMvs.length>0){ aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:allMvs[0].from.c+','+allMvs[0].from.r,to:allMvs[0].to.c+','+allMvs[0].to.r}); doMove(allMvs[0].from,allMvs[0].to); }
+  if(bestMove){
+    const p=G.board[bestMove.from.r][bestMove.from.c];
+    if(p&&p.t==='green'){
+      const valid=[...pieceKills(bestMove.from.c,bestMove.from.r,p),...pieceMoves(bestMove.from.c,bestMove.from.r,p)];
+      if(valid.some(m=>m.c===bestMove.to.c&&m.r===bestMove.to.r)){
+        aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:bestMove.from.c+','+bestMove.from.r,to:bestMove.to.c+','+bestMove.to.r});
+        doMove(bestMove.from,bestMove.to);
+        return;
+      }
+    }
+  }
+  // Fallback: premier coup légal disponible
+  if(allMvs.length>0){
+    const mv=allMvs[0];
+    const p=G.board[mv.from.r][mv.from.c];
+    if(p&&p.t==='green'){
+      aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:mv.from.c+','+mv.from.r,to:mv.to.c+','+mv.to.r});
+      doMove(mv.from,mv.to);
+    }
+  }
 }
 
 function getSafeMoves(board,col){
@@ -1924,17 +1938,9 @@ function isMoveUnsafe(board,from,to,col){
 }
 
 function getBookMove(){
-  // Check if we have a book move for current move count
-  const mv = KATLA_COURTE_GREEN[G.mc];
-  if(mv) return mv;
-  // Post-atkatila Tawyiba if mc in range 17-22
-  if(G.mc >= 17 && G.mc <= 22){
-    const step = G.mc - 17;
-    if(step < TAWYIBA.length) return TAWYIBA[step];
-  }
+  // Livre d'ouvertures désactivé - coordonnées à recalibrer
   return null;
 }
-
 function rootSearch(board, col, depth){
   const mvs = (typeof getSafeMoves !== "undefined") ? getSafeMoves(board, col, true) : getMvs(board, col);
   if(!mvs.length) return null;
