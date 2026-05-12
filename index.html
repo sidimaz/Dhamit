@@ -307,11 +307,6 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
 </head>
 <body lang="fr">
 
-<div class="lbar">
-  <button class="lb on" id="lfr" onclick="setLang('fr')">FR</button>
-  <button class="lb" id="lar" onclick="setLang('ar')">عر</button>
-</div>
-
 <!-- MENU -->
 
 <div id="menu-screen" class="screen active">
@@ -334,7 +329,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       </div>
     </div>
           <button class="mbtn mbtn-dark" onclick="installPWA()" id="btn-pwa" style="display:none"><span>📲 Installer l'application</span></button>
-    <div class="ver">DHAMIÉ v7.4 • Sidimaz</div>
+    <div class="ver">DHAMIÉ v7.8 • Sidimaz</div>
   </div>
 </div>
 
@@ -345,11 +340,11 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
     <div class="sttl" id="s-ttl">Configuration</div>
     <div id="lf">
       <div class="fg">
-        <label class="fl" id="l-p1">Joueur 1 🪄 (bâtons dorés — bas)</label>
+        <label class="fl" id="l-p1"><svg viewBox="0 0 36 80" style="width:18px;height:32px;display:inline-block;vertical-align:middle"><defs><linearGradient id="wgm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8C060"/><stop offset="45%" stop-color="#C08820"/><stop offset="100%" stop-color="#7A5010"/></linearGradient><linearGradient id="wsm" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9A6818"/><stop offset="50%" stop-color="#C89228"/><stop offset="100%" stop-color="#8A5810"/></linearGradient></defs><rect x="15" y="32" width="6" height="42" rx="3" fill="url(#wsm)"/><ellipse cx="18" cy="20" rx="14" ry="17" fill="url(#wgm)"/><ellipse cx="12" cy="12" rx="5" ry="7" fill="rgba(255,255,255,.25)" transform="rotate(-15,12,12)"/></svg> Joueur 1 (bâtons dorés — bas)</label>
         <input class="fi" id="p1n" type="text" placeholder="Joueur 1" autocomplete="off">
       </div>
       <div class="fg" id="p2g">
-        <label class="fl" id="l-p2">Joueur 2 🫘 (crottes noires — haut)</label>
+        <label class="fl" id="l-p2"><svg viewBox="0 0 36 46" style="width:18px;height:24px;display:inline-block;vertical-align:middle"><defs><radialGradient id="dgm" cx="36%" cy="30%" r="65%"><stop offset="0%" stop-color="#6B3E1E"/><stop offset="55%" stop-color="#2E1508"/><stop offset="100%" stop-color="#150903"/></radialGradient></defs><path d="M18,3 C27,3 33,9 33,18 C33,28 26,38 18,43 C10,38 3,28 3,18 C3,9 9,3 18,3Z" fill="url(#dgm)"/><ellipse cx="12" cy="13" rx="4" ry="5" fill="rgba(255,255,255,.2)" transform="rotate(-20,12,13)"/></svg> Joueur 2 (crottes noires — haut)</label>
         <input class="fi" id="p2n" type="text" placeholder="Joueur 2" autocomplete="off">
       </div>
       <div class="fg" id="ailg" style="display:none">
@@ -362,8 +357,8 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       <div class="fg">
         <label class="fl" id="l-who">Qui fait la Warda (premier coup) ?</label>
         <select class="fs" id="whos">
-          <option value="red" id="o-p1">Joueur 1 🪄 (bas)</option>
-          <option value="green" id="o-p2">Joueur 2 🫘 (haut)</option>
+          <option value="red" id="o-p1">Joueur 1 🏅 (bas)</option>
+          <option value="green" id="o-p2">Joueur 2 ⚫ (haut)</option>
           <option value="random" id="o-rnd">Aléatoire</option>
         </select>
       </div>
@@ -408,7 +403,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
     <div class="sp">
       <div class="pcard bc" id="p1c">
         <div class="pnm">
-          <span class="ico-b"><span class="ih"></span><span class="is"></span></span>
+          <svg viewBox="0 0 36 80" style="width:18px;height:32px;display:inline-block;vertical-align:middle"><defs><linearGradient id="wgm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8C060"/><stop offset="45%" stop-color="#C08820"/><stop offset="100%" stop-color="#7A5010"/></linearGradient><linearGradient id="wsm" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9A6818"/><stop offset="50%" stop-color="#C89228"/><stop offset="100%" stop-color="#8A5810"/></linearGradient></defs><rect x="15" y="32" width="6" height="42" rx="3" fill="url(#wsm)"/><ellipse cx="18" cy="20" rx="14" ry="17" fill="url(#wgm)"/><ellipse cx="12" cy="12" rx="5" ry="7" fill="rgba(255,255,255,.25)" transform="rotate(-15,12,12)"/></svg>
           <span id="p1dn">—</span>
         </div>
         <div class="ppc" id="p1pc">Pièces: 40</div>
@@ -417,7 +412,7 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       </div>
       <div class="pcard dc" id="p2c">
         <div class="pnm">
-          <span class="ico-d"></span>
+          <svg viewBox="0 0 36 46" style="width:18px;height:24px;display:inline-block;vertical-align:middle"><defs><radialGradient id="dgm" cx="36%" cy="30%" r="65%"><stop offset="0%" stop-color="#6B3E1E"/><stop offset="55%" stop-color="#2E1508"/><stop offset="100%" stop-color="#150903"/></radialGradient></defs><path d="M18,3 C27,3 33,9 33,18 C33,28 26,38 18,43 C10,38 3,28 3,18 C3,9 9,3 18,3Z" fill="url(#dgm)"/><ellipse cx="12" cy="13" rx="4" ry="5" fill="rgba(255,255,255,.2)" transform="rotate(-20,12,13)"/></svg>
           <span id="p2dn">—</span>
         </div>
         <div class="ppc" id="p2pc">Pièces: 40</div>
@@ -427,11 +422,11 @@ display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr
       <div id="sfb" class="sfb" style="display:none">⚠ Soufla !</div>
       <div class="sttl2" id="sec-cap">Capturées</div>
       <div style="margin-top:4px">
-        <div style="font-size:.62rem;color:var(--gold-l);font-weight:600;margin-bottom:3px" id="cap1l">🪄 a pris :</div>
+        <div style="font-size:.62rem;color:var(--gold-l);font-weight:600;margin-bottom:3px" id="cap1l"><svg viewBox="0 0 36 80" style="width:18px;height:32px;display:inline-block;vertical-align:middle"><defs><linearGradient id="wgm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8C060"/><stop offset="45%" stop-color="#C08820"/><stop offset="100%" stop-color="#7A5010"/></linearGradient><linearGradient id="wsm" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#9A6818"/><stop offset="50%" stop-color="#C89228"/><stop offset="100%" stop-color="#8A5810"/></linearGradient></defs><rect x="15" y="32" width="6" height="42" rx="3" fill="url(#wsm)"/><ellipse cx="18" cy="20" rx="14" ry="17" fill="url(#wgm)"/><ellipse cx="12" cy="12" rx="5" ry="7" fill="rgba(255,255,255,.25)" transform="rotate(-15,12,12)"/></svg> a pris :</div>
         <div id="p1cap-count" style="font-size:1.1rem;font-weight:800;color:#F2C060;background:rgba(201,147,58,.15);border:1px solid rgba(201,147,58,.3);border-radius:6px;padding:3px 8px;text-align:center;min-width:32px;display:inline-block">0</div>
       </div>
       <div style="margin-top:6px">
-        <div style="font-size:.62rem;color:rgba(255,255,255,.5);font-weight:600;margin-bottom:3px" id="cap2l">🫘 a pris :</div>
+        <div style="font-size:.62rem;color:rgba(255,255,255,.5);font-weight:600;margin-bottom:3px" id="cap2l"><svg viewBox="0 0 36 46" style="width:18px;height:24px;display:inline-block;vertical-align:middle"><defs><radialGradient id="dgm" cx="36%" cy="30%" r="65%"><stop offset="0%" stop-color="#6B3E1E"/><stop offset="55%" stop-color="#2E1508"/><stop offset="100%" stop-color="#150903"/></radialGradient></defs><path d="M18,3 C27,3 33,9 33,18 C33,28 26,38 18,43 C10,38 3,28 3,18 C3,9 9,3 18,3Z" fill="url(#dgm)"/><ellipse cx="12" cy="13" rx="4" ry="5" fill="rgba(255,255,255,.2)" transform="rotate(-20,12,13)"/></svg> a pris :</div>
         <div id="p2cap-count" style="font-size:1.1rem;font-weight:800;color:#C8A060;background:rgba(100,70,30,.3);border:1px solid rgba(150,100,50,.3);border-radius:6px;padding:3px 8px;text-align:center;min-width:32px;display:inline-block">0</div>
       </div>
     </div>
@@ -1201,22 +1196,27 @@ function doMove(from, to){
   playSound(cap ? "capture" : "move");
   const p = G.board[to.r][to.c];
 
-  // Sultan promotion
+  // Sultan promotion — RÈGLE CORRECTE:
+  // - Arrive en dernière ligne SANS capture → Sultan → fin du tour
+  // - Arrive en dernière ligne EN capturant → peut continuer comme Kalb (mitoyenne)
+  // - Quand elle S'ARRÊTE en dernière ligne → Sultan acquis → fin du tour
+  // - Tour suivant → pouvoirs Sultan complets (capture à distance)
+  // - Passe par dernière ligne et continue chaîne → PAS Sultan (juste de passage)
   if(p&&!p.s&&((p.t==='red'&&to.r===0)||(p.t==='green'&&to.r===BS-1))){
-    p.s=true; toast(t('sb'),2000); flashCell(to.c,to.r,'rgba(255,215,0,.5)');
-    G.lastMove={fc:from.c,fr:from.r,tc:to.c,tr:to.r};
-    G.log.push(cn(from)+'→'+cn(to)+(cap?'×'+cn(cap):''));
-    G.mc++;
-    if(G.phase==='atk'){G.phase='play';G.atkDone=true;toast(t('ae'),1700);}
-    G.sel=null;G.valid=[];
-    // Sultan promu pendant une capture: peut continuer comme Kalb (pas à distance)
+    // Vérifier d'abord si on peut continuer la chaîne (captures mitoyennes)
     if(cap){
-      const moreAsKalb = pieceKillsAsKalb(to.c,to.r,p);
-      if(moreAsKalb.length>0){
+      const moreAsKalb = pieceKillsAsKalb(to.c, to.r, p);
+      if(moreAsKalb.length > 0){
+        // Peut continuer → PAS encore Sultan (juste de passage)
+        // Ne pas promouvoir maintenant, continuer la chaîne
+        G.lastMove={fc:from.c,fr:from.r,tc:to.c,tr:to.r};
+        G.log.push(cn(from)+'→'+cn(to)+(cap?'×'+cn(cap):''));
+        G.mc++;
+        if(G.phase==='atk'){G.phase='play';G.atkDone=true;toast(t('ae'),1700);}
         G.sel={c:to.c,r:to.r};
         G.valid=moreAsKalb;
         G.chainPiece={c:to.c,r:to.r};
-        renderBoard();updateUI();toast(t('ch'),2000);
+        renderBoard(); updateUI(); toast(t('ch'),2000);
         if(G.mode==='ai'&&G.turn==='green'){
           setTimeout(function(){
             if(G.chainPiece&&G.valid.length>0)
@@ -1226,10 +1226,17 @@ function doMove(from, to){
         return;
       }
     }
-    // Pas de suite possible: fin du tour
-    G.chainPiece=null;
-    renderBoard();updateUI();
-    switchTurn();
+    // S'arrête en dernière ligne → Sultan acquis → fin du tour
+    p.s=true;
+    toast(t('sb'),2000);
+    flashCell(to.c,to.r,'rgba(255,215,0,.5)');
+    G.lastMove={fc:from.c,fr:from.r,tc:to.c,tr:to.r};
+    G.log.push(cn(from)+'→'+cn(to)+(cap?'×'+cn(cap):''));
+    G.mc++;
+    if(G.phase==='atk'){G.phase='play';G.atkDone=true;toast(t('ae'),1700);}
+    G.sel=null; G.valid=[]; G.chainPiece=null;
+    renderBoard(); updateUI();
+    switchTurn(); // Fin du tour — Sultan joue au prochain tour
     return;
   }
   G.lastMove={fc:from.c, fr:from.r, tc:to.c, tr:to.r};
@@ -1246,9 +1253,11 @@ function doMove(from, to){
         G.sel=null; G.valid=[]; G.chainPiece=null;
         switchTurn(); return;
       }
-      // Soufla OFF: pas de clignotement, tour passé directement
+      // Mode soufla: gérer la chaîne
       if(!G.soufla){
+        // Mode MANUEL: démarrer timer 15s, l'adversaire peut réclamer
         G.sel=null; G.valid=[]; G.chainPiece=null;
+        startChainTimer15({c:to.c,r:to.r}, more);
         switchTurn(); return;
       }
       // Soufla ON: forcer la continuation
@@ -1268,17 +1277,11 @@ function doMove(from, to){
 
   // ---- SOUFLA CHECK (skip when receiving opponent move online) ----
   if(G.soufla&&G.phase==='play'&&!(G.mode==='online'&&OL.receiving)){
-    // Ne pas vérifier soufla sur le coup de l'IA (elle joue toujours correctement)
-    const justPlayedColor = G.turn==='red'?'green':'red';
-    if(G.mode==='ai'&&justPlayedColor==='green'){
-      // L'IA vient de jouer - pas de soufla contre elle
-    } else {
-      const faultyPos = checkSoufla(from, to, cap, killMap);
-      if(faultyPos){
-        G.chainPiece=null;
-        triggerSoufla(G.turn, faultyPos);
-        return;
-      }
+    const faultyPos = checkSoufla(from, to, cap, killMap);
+    if(faultyPos){
+      G.chainPiece=null;
+      triggerSoufla(G.turn, faultyPos);
+      return;
     }
   }
 
@@ -1630,108 +1633,205 @@ function sendGameStats(winnerName, byTime){
 
 
 // ============================================================
-// STATS via Google Forms (no-CORS avec img pixel)
+// STATS via Google Forms v1 (mapping corrigé)
 // ============================================================
-const GFORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe9iEABXdCUue_7krbDsXiMmCJDRwQhuTnogb9PFLiPMaJ_Pw/formResponse';
-// Entry IDs à remplir quand on les aura
-// Pour l'instant: envoi via fetch no-cors (ne bloque pas même si bloqué)
-let GFORM_ENTRIES = {
-  date: 'entry.453748403',
-  mode: 'entry.399167631', 
-  joueur1: 'entry.259663987',
-  joueur2: 'entry.1177109810',
-  gagnant: 'entry.151761107',
-  coups: 'entry.714313404',
-  duree: 'entry.889008628',
-  niveauIa: 'entry.89485309',
-  langue: 'entry.2064644584',
-  soufla: 'entry.1027578855'
-};
+const GFORM_V2 = 'https://docs.google.com/forms/d/e/1FAIpQLSe9iEABXdCUue_7krbDsXiMmCJDRwQhuTnogb9PFLiPMaJ_Pw/formResponse';
+
+function _sendForm(data){
+  try{
+    const params = new URLSearchParams();
+    for(const [k,v] of Object.entries(data)) params.append(k, v||'');
+    fetch(GFORM_V2, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body: params.toString()
+    }).catch(()=>{});
+    // Backup iframe
+    setTimeout(function(){
+      try{
+        const iframe = document.createElement('iframe');
+        iframe.style.display='none';
+        document.body.appendChild(iframe);
+        const iDoc = iframe.contentDocument||iframe.contentWindow.document;
+        iDoc.open();
+        iDoc.write('<form method="POST" action="'+GFORM_V2+'">');
+        for(const [k,v] of Object.entries(data))
+          iDoc.write('<input type="hidden" name="'+k+'" value="'+(v||'')+'">');
+        iDoc.write('</form>');
+        iDoc.close();
+        iDoc.forms[0].submit();
+        setTimeout(function(){ try{document.body.removeChild(iframe);}catch(e){} },3000);
+      }catch(e){}
+    },500);
+  }catch(e){}
+}
 
 function sendGFormStats(winnerName, byTime){
-  try {
+  try{
     const dMs = G.startTime ? Date.now()-G.startTime : 0;
-    const dMin = Math.floor(dMs/60000);
-    const dSec = Math.floor((dMs%60000)/1000);
-    const params = new URLSearchParams();
-    params.append(GFORM_ENTRIES.date, new Date().toLocaleDateString('fr-FR'));
-    params.append(GFORM_ENTRIES.mode, G.mode||'local');
-    params.append(GFORM_ENTRIES.joueur1, G.p1||'J1');
-    params.append(GFORM_ENTRIES.joueur2, G.p2||'J2');
-    params.append(GFORM_ENTRIES.gagnant, winnerName+(byTime?' (temps)':''));
-    params.append(GFORM_ENTRIES.coups, G.mc||0);
-    params.append(GFORM_ENTRIES.duree, dMin+'m '+dSec+'s');
-    params.append(GFORM_ENTRIES.niveauIa, G.mode==='ai'?G.aiLv:'');
-    params.append(GFORM_ENTRIES.langue, L||'fr');
-    params.append(GFORM_ENTRIES.soufla, G.soufla?'ON':'OFF');
-    // no-cors: ne bloque jamais même si réseau limité
-    fetch(GFORM_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: params.toString()
-    }).catch(function(){});
-  } catch(e){}
+    const dMin = Math.floor(dMs/60000), dSec = Math.floor((dMs%60000)/1000);
+    _sendForm({
+      'entry.453748403': G.mode||'local',
+      'entry.399167631': '',
+      'entry.259663987': '',
+      'entry.1177109810': G.p1||'J1',
+      'entry.151761107': G.p2||'J2',
+      'entry.714313404': winnerName+(byTime?' (temps)':''),
+      'entry.889008628': G.mc||0,
+      'entry.89485309': dMin+'m '+dSec+'s',
+      'entry.2064644584': G.mode==='ai'?G.aiLv:'',
+      'entry.1027578855': G.soufla?'ON':'OFF'
+    });
+  }catch(e){}
+}
+
+function trackVisitor(){
+  try{
+    const last = localStorage.getItem('dhamiet_last_visit');
+    const now = Date.now();
+    if(last && (now-parseInt(last)) < 3600000) return;
+    localStorage.setItem('dhamiet_last_visit', now);
+  }catch(e){}
+  fetch('https://ipapi.co/json/')
+    .then(r=>r.json())
+    .then(d=>{
+      _sendForm({
+        'entry.453748403': 'visite',
+        'entry.399167631': d.city||'',
+        'entry.259663987': d.country_name||'',
+        'entry.1177109810': '',
+        'entry.151761107': '',
+        'entry.714313404': '',
+        'entry.889008628': '0',
+        'entry.89485309': '0m 0s',
+        'entry.2064644584': '',
+        'entry.1027578855': ''
+      });
+    })
+    .catch(()=>{
+      _sendForm({
+        'entry.453748403': 'visite',
+        'entry.399167631': '',
+        'entry.259663987': '',
+        'entry.1177109810': '',
+        'entry.151761107': '',
+        'entry.714313404': '',
+        'entry.889008628': '0',
+        'entry.89485309': '0m 0s',
+        'entry.2064644584': '',
+        'entry.1027578855': ''
+      });
+    });
 }
 
 
 // ============================================================
-// TRACKING VISITEURS (pays, ville, langue)
+// CERVEAU PARTAGÉ — JSONBin.io
+// Synchronise la mémoire IA entre tous les joueurs
 // ============================================================
-const GFORM_VISIT_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe9iEABXdCUue_7krbDsXiMmCJDRwQhuTnogb9PFLiPMaJ_Pw/formResponse';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/6a01c5abadc21f119a838598';
+const JSONBIN_KEY = '$2a$10$skBwdiTeDp3UbVSVRF71/.aoSy7wHan4RMa/MwzEqJ5TctI6csTo6';
+let _brainSyncTimer = null;
 
-function trackVisitor(){
-  // Éviter de tracker plusieurs fois la même session
-  try {
-    const lastVisit = localStorage.getItem('dhamiet_last_visit');
-    const now = Date.now();
-    if(lastVisit && (now - parseInt(lastVisit)) < 3600000) return; // 1h minimum entre visites
-    localStorage.setItem('dhamiet_last_visit', now);
-  } catch(e){}
-  
-  // Récupérer la géolocalisation via ipapi.co (gratuit)
-  fetch('https://ipapi.co/json/')
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      const params = new URLSearchParams();
-      params.append('entry.453748403', new Date().toLocaleDateString('fr-FR')); // date
-      params.append('entry.399167631', 'visite'); // mode = visite
-      params.append('entry.259663987', data.city || 'inconnu'); // joueur1 = ville
-      params.append('entry.1177109810', data.country_name || 'inconnu'); // joueur2 = pays
-      params.append('entry.151761107', data.country_code || ''); // gagnant = code pays
-      params.append('entry.714313404', '0'); // coups = 0
-      params.append('entry.889008628', '0m 0s'); // duree
-      params.append('entry.89485309', ''); // niveauIa
-      params.append('entry.2064644584', navigator.language || 'fr'); // langue navigateur
-      params.append('entry.1027578855', data.timezone || ''); // soufla = timezone
-      
-      fetch(GFORM_VISIT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: params.toString()
-      }).catch(function(){});
-    })
-    .catch(function(){
-      // Si ipapi bloqué, envoyer quand même sans géolocalisation
-      const params = new URLSearchParams();
-      params.append('entry.453748403', new Date().toLocaleDateString('fr-FR'));
-      params.append('entry.399167631', 'visite');
-      params.append('entry.259663987', 'inconnu');
-      params.append('entry.1177109810', 'inconnu');
-      params.append('entry.151761107', '');
-      params.append('entry.714313404', '0');
-      params.append('entry.889008628', '0m 0s');
-      params.append('entry.89485309', '');
-      params.append('entry.2064644584', navigator.language || 'fr');
-      params.append('entry.1027578855', '');
-      fetch(GFORM_VISIT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: params.toString()
-      }).catch(function(){});
+function loadSharedBrain(){
+  fetch(JSONBIN_URL+'/latest', {
+    headers: {
+      'X-Master-Key': JSONBIN_KEY,
+      'X-Bin-Meta': 'false'
+    }
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    if(data && data.positions){
+      mergeBrainData(data);
+      console.log('🧠 Cerveau partagé chargé:', Object.keys(data.positions).length, 'positions');
+    }
+  })
+  .catch(e=>console.log('Brain load:', e.message));
+}
+
+function saveSharedBrain(){
+  if(!AI_MEMORY || !AI_MEMORY.positions) return;
+  // Fusionner avec le cerveau actuel avant de sauvegarder
+  fetch(JSONBIN_URL+'/latest', {
+    headers: {
+      'X-Master-Key': JSONBIN_KEY,
+      'X-Bin-Meta': 'false'
+    }
+  })
+  .then(r=>r.json())
+  .then(remote=>{
+    // Fusionner remote + local
+    if(remote && remote.positions){
+      mergeBrainData(remote);
+    }
+    // Compresser et sauvegarder
+    const toSave = compressBrainData(AI_MEMORY);
+    return fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(toSave)
     });
+  })
+  .then(r=>r.json())
+  .then(()=>console.log('🧠 Cerveau partagé sauvegardé'))
+  .catch(e=>console.log('Brain save:', e.message));
+}
+
+function mergeBrainData(remote){
+  if(!remote || !remote.positions) return;
+  if(!AI_MEMORY.positions) AI_MEMORY.positions = {};
+  if(!AI_MEMORY.stats) AI_MEMORY.stats = {games:0,wins:0,losses:0};
+  
+  for(const [key, moves] of Object.entries(remote.positions)){
+    if(!AI_MEMORY.positions[key]) AI_MEMORY.positions[key] = {};
+    for(const [mk, stats] of Object.entries(moves)){
+      if(!AI_MEMORY.positions[key][mk]) 
+        AI_MEMORY.positions[key][mk] = {w:0,l:0,p:0};
+      // Prendre le max pour éviter les doublons
+      AI_MEMORY.positions[key][mk].w = Math.max(
+        AI_MEMORY.positions[key][mk].w, stats.w||0);
+      AI_MEMORY.positions[key][mk].l = Math.max(
+        AI_MEMORY.positions[key][mk].l, stats.l||0);
+      AI_MEMORY.positions[key][mk].p = Math.max(
+        AI_MEMORY.positions[key][mk].p, stats.p||0);
+    }
+  }
+  // Stats globales: prendre le max
+  if(remote.stats){
+    AI_MEMORY.stats.games = Math.max(AI_MEMORY.stats.games, remote.stats.games||0);
+    AI_MEMORY.stats.wins = Math.max(AI_MEMORY.stats.wins, remote.stats.wins||0);
+    AI_MEMORY.stats.losses = Math.max(AI_MEMORY.stats.losses, remote.stats.losses||0);
+  }
+  saveMemory(); // Sauvegarder localement aussi
+}
+
+function compressBrainData(brain){
+  // Garder seulement les positions avec assez de données
+  const compressed = {positions:{}, stats:{...brain.stats}};
+  for(const [key, moves] of Object.entries(brain.positions||{})){
+    const useful = {};
+    for(const [mk, stats] of Object.entries(moves)){
+      if(stats.p >= 2) useful[mk] = stats;
+    }
+    if(Object.keys(useful).length > 0) compressed.positions[key] = useful;
+  }
+  // Limiter à 1500 positions pour JSONBin (limite taille)
+  const keys = Object.keys(compressed.positions);
+  if(keys.length > 1500){
+    const sorted = keys.sort((a,b)=>{
+      const aP = Object.values(compressed.positions[a]).reduce((s,v)=>s+v.p,0);
+      const bP = Object.values(compressed.positions[b]).reduce((s,v)=>s+v.p,0);
+      return bP-aP;
+    });
+    const trimmed = {};
+    sorted.slice(0,1500).forEach(k=>trimmed[k]=compressed.positions[k]);
+    compressed.positions = trimmed;
+  }
+  return compressed;
 }
 
 function endGame(w,byTime=false){
@@ -1745,6 +1845,8 @@ function endGame(w,byTime=false){
     if(w==='green') rememberWin(aiMoveHistory);
     else rememberLoss(aiMoveHistory);
     aiMoveHistory=[];
+    // Synchroniser avec le cerveau partagé
+    setTimeout(saveSharedBrain, 1000);
   }
   showModal(byTime?'⏰':'🏆',
     byTime?t('to'):t('wi'),
@@ -1879,409 +1981,41 @@ const TAWYIBA = [
 
 
 
-function aiTurn(){
-  if(G.over || G.turn !== 'green') return;
-  if(G.phase === 'atk'){
-    const wf = {c:5, r:3};
-    if(G.board[wf.r]&&G.board[wf.r][wf.c]&&G.board[wf.r][wf.c].t==='green'){
-      doMove(wf,{c:MC,r:MR}); return;
-    }
-    return;
-  }
-  // Livre d'ouvertures désactivé
-  const lvl=Math.min(G.aiLv,4);
-  const timeLimits=[0,300,800,1500,3000];
-  const maxDepths=[0,2,3,4,6];
-  aiTimeLimit=timeLimits[lvl];
-  const maxDepth=maxDepths[lvl];
-  if(lvl===1){
-    const mvs=getSafeMoves(G.board,'green');
-    if(mvs.length){const mv=mvs[Math.floor(Math.random()*mvs.length)];doMove(mv.from,mv.to);}
-    return;
-  }
-  if(G.mc<=20&&lvl>=2){
-    const bookMv=getBookMove();
-    if(bookMv){
-      const p=G.board[bookMv.from.r][bookMv.from.c];
-      if(p&&p.t==='green'){
-        const validMoves=[...pieceKills(bookMv.from.c,bookMv.from.r,p),...pieceMoves(bookMv.from.c,bookMv.from.r,p)];
-        if(validMoves.some(m=>m.c===bookMv.to.c&&m.r===bookMv.to.r)){
-          doMove(bookMv.from,bookMv.to); return;
-        }
-      }
-    }
-  }
-  aiStartTime=Date.now();
-  const allMvs=getSafeMoves(G.board,'green');
-  if(!allMvs.length) return;
-  let bestMove=null,bestScore=-999999;
-  allMvs.sort((a,b)=>mvHeuristic(G.board,b,'green')-mvHeuristic(G.board,a,'green'));
-  for(const mv of allMvs){
-    if(Date.now()-aiStartTime>aiTimeLimit*0.8) break;
-    const nb=cloneB(G.board);applyB(nb,mv.from,mv.to);
-    const score=-minimax2(nb,'red',maxDepth-1,-999999,999999,'green');
-    if(score>bestScore){bestScore=score;bestMove=mv;}
-  }
-  // Mémoire: consulter
-  const memMove = consultMemory(G.board, 'green', allMvs);
-  if(memMove){ aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:memMove.from.c+','+memMove.from.r,to:memMove.to.c+','+memMove.to.r}); doMove(memMove.from,memMove.to); return; }
-  if(bestMove){
-    const p=G.board[bestMove.from.r][bestMove.from.c];
-    if(p&&p.t==='green'){
-      const valid=[...pieceKills(bestMove.from.c,bestMove.from.r,p),...pieceMoves(bestMove.from.c,bestMove.from.r,p)];
-      if(valid.some(m=>m.c===bestMove.to.c&&m.r===bestMove.to.r)){
-        aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:bestMove.from.c+','+bestMove.from.r,to:bestMove.to.c+','+bestMove.to.r});
-        doMove(bestMove.from,bestMove.to);
-        return;
-      }
-    }
-  }
-  // Fallback: premier coup légal disponible
-  if(allMvs.length>0){
-    const mv=allMvs[0];
-    const p=G.board[mv.from.r][mv.from.c];
-    if(p&&p.t==='green'){
-      aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:mv.from.c+','+mv.from.r,to:mv.to.c+','+mv.to.r});
-      doMove(mv.from,mv.to);
-    }
-  }
-}
 
-function getSafeMoves(board,col){
-  const mvs=[];
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c];
-    if(p&&p.t===col){const k=getKillsB(board,c,r,p);for(const m of k)mvs.push({from:{c,r},to:m});}
-  }
-  if(mvs.length) return mvs;
-  const safe=[];
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c];
-    if(p&&p.t===col){
-      const moves=getMovesB(board,c,r,p);
-      for(const m of moves){
-        if(!isMoveUnsafe(board,{c,r},m,col)) safe.push({from:{c,r},to:m});
-      }
-    }
-  }
-  if(safe.length) return safe;
-  // Anti-blocage: choisir le coup le moins dangereux
-  let bestMvs=[],bestLoss=999;
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c];
-    if(p&&p.t===col){
-      const moves=getMovesB(board,c,r,p);
-      for(const m of moves){
-        const nb=cloneB(board);const pp=nb[r][c];nb[m.r][m.c]=pp;nb[r][c]=null;
-        let threats=0;const opp=col==='red'?'green':'red';
-        for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
-          const ep=nb[rr][cc];
-          if(ep&&ep.t===opp){const kills=getKillsB(nb,cc,rr,ep);for(const k of kills){if(k.cap&&nb[k.cap.r]&&nb[k.cap.r][k.cap.c]&&nb[k.cap.r][k.cap.c].t===col)threats++;}}
-        }
-        if(threats<bestLoss){bestLoss=threats;bestMvs=[{from:{c,r},to:m}];}
-        else if(threats===bestLoss){bestMvs.push({from:{c,r},to:m});}
-      }
-    }
-  }
-  return bestMvs;
-}
+// Helpers IA (board operations)
+function cloneB(b){ return b.map(r=>r.map(p=>p?{t:p.t,s:p.s}:null)); }
 
-function isMoveUnsafe(board,from,to,col){
-  const nb=cloneB(board);const p=nb[from.r][from.c];
-  nb[to.r][to.c]=p;nb[from.r][from.c]=null;
-  const opp=col==='red'?'green':'red';
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const ep=nb[r][c];
-    if(ep&&ep.t===opp){const kills=getKillsB(nb,c,r,ep);for(const k of kills){if(k.cap&&k.cap.c===to.c&&k.cap.r===to.r)return true;}}
-  }
-  return false;
-}
-
-function getBookMove(){
-  // Livre d'ouvertures désactivé - coordonnées à recalibrer
-  return null;
-}
-function rootSearch(board, col, depth){
-  const mvs = (typeof getSafeMoves !== "undefined") ? getSafeMoves(board, col, true) : getMvs(board, col);
-  if(!mvs.length) return null;
-  mvs.sort((a,b) => mvHeuristic(board,b,col) - mvHeuristic(board,a,col));
-  let best=null, bestS=-999999, alpha=-999999, beta=999999;
-  for(const mv of mvs){
-    if(Date.now()-aiStartTime > aiTimeLimit) break;
-    const nb = cloneB(board);
-    applyB(nb, mv.from, mv.to);
-    const s = -abNega(nb, col==='red'?'green':'red', depth-1, -beta, -alpha, col==='red'?'green':'red');
-    if(s > bestS){ bestS=s; best=mv; }
-    if(s > alpha) alpha=s;
-    if(beta <= alpha) break;
-  }
-  return best;
-}
-
-function abNega(board, col, depth, alpha, beta, myCol){
-  if(Date.now()-aiStartTime > aiTimeLimit) return evalBoard(board, myCol);
-  const mvs = (typeof getSafeMoves !== "undefined") ? getSafeMoves(board, col, true) : getMvs(board, col);
-  if(!mvs.length) return col===myCol ? -90000 : 90000;
-  if(depth <= 0) return quiescence(board, col, 4, alpha, beta, myCol);
-  mvs.sort((a,b) => mvHeuristic(board,b,col) - mvHeuristic(board,a,col));
-  const sign = col===myCol ? 1 : -1;
-  let best = -999999;
-  for(const mv of mvs){
-    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
-    // Handle chain captures (same player keeps going)
-    const p=nb[mv.to.r][mv.to.c];
-    let s;
-    if(mv.to.cap && p && getKillsB(nb,mv.to.c,mv.to.r,p).length>0){
-      s = sign * chainSearch(nb,mv.to.c,mv.to.r,depth,alpha,beta,myCol,col);
-    } else {
-      const opp = col==='red'?'green':'red';
-      s = sign * (-abNega(nb, opp, depth-1, -beta, -alpha, myCol));
-      s = abNega2(nb, col, depth, alpha, beta, myCol, s, sign);
-    }
-    best = Math.max(best, s*sign)*sign;
-    // Actually just do standard negamax:
-    const raw = minimax2(nb, col==='red'?'green':'red', depth-1, -beta, -alpha, myCol);
-    best = Math.max(best, raw*-1 * (col===myCol?1:-1));
-    if(best > alpha) alpha=best;
-    if(beta<=alpha) break;
-  }
-  return best;
-}
-
-// Cleaner minimax
-function minimax2(board, col, depth, alpha, beta, myCol){
-  if(Date.now()-aiStartTime > aiTimeLimit) return evalBoard(board,myCol);
-  const mvs=getMvs(board,col);
-  if(!mvs.length) return col===myCol ? -90000 : 90000;
-  if(depth<=0) return quiescence(board,col,3,alpha,beta,myCol);
-  mvs.sort((a,b)=>mvHeuristic(board,b,col)-mvHeuristic(board,a,col));
-  const isMax=col===myCol;
-  let best=isMax?-999999:999999;
-  for(const mv of mvs){
-    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
-    const p=nb[mv.to.r][mv.to.c];
-    let s;
-    if(mv.to.cap&&p&&getKillsB(nb,mv.to.c,mv.to.r,p).length>0){
-      s=chainMM(nb,mv.to.c,mv.to.r,depth,alpha,beta,myCol,col);
-    } else {
-      s=minimax2(nb,col==='red'?'green':'red',depth-1,alpha,beta,myCol);
-    }
-    if(isMax){best=Math.max(best,s);alpha=Math.max(alpha,s);}
-    else{best=Math.min(best,s);beta=Math.min(beta,s);}
-    if(beta<=alpha) break;
-  }
-  return best;
-}
-
-function chainMM(board,c,r,depth,alpha,beta,myCol,captCol){
-  const p=board[r][c]; if(!p) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
-  const chains=getKillsB(board,c,r,p);
-  if(!chains.length) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
-  const isMax=captCol===myCol;
-  let best=isMax?-999999:999999;
-  for(const m of chains){
-    const nb=cloneB(board); applyB(nb,{c,r},m);
-    const np=nb[m.r][m.c];
-    const s=np&&getKillsB(nb,m.c,m.r,np).length>0
-      ? chainMM(nb,m.c,m.r,depth,alpha,beta,myCol,captCol)
-      : minimax2(nb,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
-    if(isMax){best=Math.max(best,s);alpha=Math.max(alpha,s);}
-    else{best=Math.min(best,s);beta=Math.min(beta,s);}
-    if(beta<=alpha) break;
-  }
-  return best;
-}
-
-function chainSearch(board,c,r,depth,alpha,beta,myCol,captCol){
-  const p=board[r][c]; if(!p) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
-  const chains=getKillsB(board,c,r,p);
-  if(!chains.length) return minimax2(board,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
-  const isMax=captCol===myCol;
-  let best=isMax?-999999:999999;
-  for(const m of chains){
-    const nb=cloneB(board); applyB(nb,{c,r},m);
-    const np=nb[m.r][m.c];
-    const s=np&&getKillsB(nb,m.c,m.r,np).length>0
-      ? chainSearch(nb,m.c,m.r,depth,alpha,beta,myCol,captCol)
-      : minimax2(nb,captCol==='red'?'green':'red',depth-1,alpha,beta,myCol);
-    if(isMax){best=Math.max(best,s);alpha=Math.max(alpha,s);}
-    else{best=Math.min(best,s);beta=Math.min(beta,s);}
-    if(beta<=alpha) break;
-  }
-  return best;
-}
-
-function abNega2(nb,col,depth,alpha,beta,myCol,s,sign){return s;}
-
-function quiescence(board,col,depth,alpha,beta,myCol){
-  const stand=evalBoard(board,myCol);
-  if(depth<=0) return stand;
-  const isMax=col===myCol;
-  if(isMax){if(stand>=beta)return beta;if(stand>alpha)alpha=stand;}
-  else{if(stand<=alpha)return alpha;if(stand<beta)beta=stand;}
-  const caps=[];
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c]; if(!p||p.t!==col) continue;
-    for(const m of getKillsB(board,c,r,p)) caps.push({from:{c,r},to:m});
-  }
-  if(!caps.length) return stand;
-  caps.sort((a,b)=>capVal(board,b)-capVal(board,a));
-  let best=stand;
-  for(const mv of caps){
-    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
-    const s=quiescence(nb,col==='red'?'green':'red',depth-1,alpha,beta,myCol);
-    best=isMax?Math.max(best,s):Math.min(best,s);
-    if(isMax){if(best>alpha)alpha=best;}else{if(best<beta)beta=best;}
-    if(beta<=alpha) break;
-  }
-  return best;
-}
-
-function capVal(board,mv){
-  if(!mv.to.cap) return 0;
-  const p=board[mv.to.cap.r][mv.to.cap.c];
-  return p?(p.s?400:120):0;
-}
-
-// Move ordering: higher = better, search first
-function mvHeuristic(board,mv,col){
-  let s=0;
-  const opp=col==='red'?'green':'red';
-  if(mv.to.cap){
-    const cp=board[mv.to.cap.r][mv.to.cap.c];
-    s+=cp?(cp.s?700:250):250;
-    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
-    const p=nb[mv.to.r][mv.to.c];
-    if(p) s+=getKillsB(nb,mv.to.c,mv.to.r,p).length*180;
-    if(cp&&isPieceThreatB(board,mv.to.cap.c,mv.to.cap.r,col)) s+=120;
-  }
-  if((col==='green'&&mv.to.r===BS-1)||(col==='red'&&mv.to.r===0)) s+=600;
-  if((col==='green'&&mv.to.r>=7)||(col==='red'&&mv.to.r<=1)) s+=100;
-  if((col==='green'&&mv.to.r>=6)||(col==='red'&&mv.to.r<=2)) s+=50;
-  if(isPieceThreatB(board,mv.from.c,mv.from.r,col)) s+=150;
-  if(isPieceThreatB2(board,mv.to.c,mv.to.r,opp,mv.from.c,mv.from.r)) s-=100;
-  const adv=col==='green'?mv.to.r:(BS-1-mv.to.r);
-  s+=adv*6;
-  s+=(4-Math.max(Math.abs(mv.to.c-4),Math.abs(mv.to.r-4)))*9;
-  return s;
-}
-
-function isPieceThreatB(board,c,r,color){
-  const opp=color==='red'?'green':'red';
-  for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
-    const p=board[rr][cc];
-    if(p&&p.t===opp&&getKillsB(board,cc,rr,p).some(k=>k.cap.c===c&&k.cap.r===r)) return true;
-  }
-  return false;
-}
-function isPieceThreatB2(board,c,r,oppColor,fc,fr){
-  const tmp=cloneB(board); tmp[fr][fc]=null;
-  for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
-    const p=tmp[rr][cc];
-    if(p&&p.t===oppColor&&getKillsB(tmp,cc,rr,p).some(k=>k.cap.c===c&&k.cap.r===r)) return true;
-  }
-  return false;
-}
-
-// BOARD EVALUATION — Dhamiet-specific (from rulebook knowledge)
-function evalBoard(board,myCol){
-  const opp=myCol==='red'?'green':'red';
-  let s=0, myN=0,oppN=0,myS=0,oppS=0;
-  const isKarn=(r,c)=>(r===0||r===8)&&(c===0||c===8);
-  const isSharka=(r,c)=>(r===0||r===8)&&(c===1||c===7);
-
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c]; if(!p) continue;
-    const mine=p.t===myCol;
-    if(mine){myN++;if(p.s)myS++;}else{oppN++;if(p.s)oppS++;}
-    let v=0;
-    if(p.s){
-      v=450;
-      v+=getKillsB(board,c,r,p).length*25;
-      v+=getMovesB(board,c,r,p).length*10;
-      v+=(4-Math.max(Math.abs(c-4),Math.abs(r-4)))*18;
-      if(isKarn(r,c)) v+=40;
-    } else {
-      v=120;
-      const adv=p.t==='green'?r:(BS-1-r);
-      v+=adv*12;
-      // Near promotion
-      if((p.t==='green'&&r>=7)||(p.t==='red'&&r<=1)) v+=80;
-      if((p.t==='green'&&r>=6)||(p.t==='red'&&r<=2)) v+=40;
-      // Center control (book: central position = power base for Kalliya)
-      v+=(4-Math.abs(c-4))*8;
-      // Flanks = attack corridors (book: column 1 and 9)
-      if(c===0||c===8) v+=adv*4;
-      // Safety
-      if(isPieceThreatB(board,c,r,p.t)) v-=100;
-      // Attack power
-      v+=getKillsB(board,c,r,p).length*50;
-      // Formation (book: connected pieces = "Kalliya" strength)
-      let conn=0;
-      const drs=onDiag(c,r)?[[1,1],[1,-1],[-1,1],[-1,-1],[0,1],[0,-1],[1,0],[-1,0]]:[[0,1],[0,-1],[1,0],[-1,0]];
-      for(const [dr,dc] of drs){
-        const nr=r+dr,nc=c+dc;
-        if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&board[nr][nc]&&board[nr][nc].t===p.t) conn++;
-      }
-      v+=conn*10;
-      // Karn safety (book: corners are safest = "Karn")
-      if(isKarn(r,c)) v+=30;
-      // Sharka = danger zone (sultan trap near corner)
-      if(isSharka(r,c)) v-=10;
-      // Penalty for isolation
-      if(conn===0) v-=15;
-    }
-    mine?s+=v:s-=v;
-  }
-  // Material
-  s+=(myN-oppN)*90;
-  s+=(myS-oppS)*350;
-  // Kill balance (attack potential)
-  let mk=0,ok=0,mm=0,om=0;
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c]; if(!p) continue;
-    const k=getKillsB(board,c,r,p).length;
-    const m=getMovesB(board,c,r,p).length;
-    p.t===myCol?(mk+=k,mm+=m):(ok+=k,om+=m);
-  }
-  s+=(mk-ok)*35;
-  s+=(mm-om)*5;
-  if(oppN===0) return 999999;
-  if(myN===0) return -999999;
-  if(oppN<=5) s+=(6-oppN)*200;
-  if(myN<=5) s-=(6-myN)*200;
-  return s;
-}
-
-function getMvs(board,col){
-  const res=[];
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c];
-    if(p&&p.t===col){const k=getKillsB(board,c,r,p);if(k.length) for(const m of k) res.push({from:{c,r},to:m});}
-  }
-  if(res.length) return res;
-  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
-    const p=board[r][c];
-    if(p&&p.t===col){const nm=getMovesB(board,c,r,p);for(const m of nm) res.push({from:{c,r},to:m});}
-  }
-  return res;
+function applyB(b,f,tt){
+  const p=b[f.r][f.c]; if(!p) return;
+  b[tt.r][tt.c]=p; b[f.r][f.c]=null;
+  if(tt.cap) b[tt.cap.r][tt.cap.c]=null;
+  if(!p.s&&((p.t==='red'&&tt.r===0)||(p.t==='green'&&tt.r===BS-1))) p.s=true;
 }
 
 function getKillsB(board,c,r,p){
   const mv=[],opp=p.t==='red'?'green':'red';
-  const dirs=onDiag(c,r)?[[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]:[[0,1],[0,-1],[1,0],[-1,0]];
+  const dirs=[[0,1],[0,-1],[1,0],[-1,0],...(c%2===r%2?[[1,1],[1,-1],[-1,1],[-1,-1]]:[])];
   for(const [dr,dc] of dirs){
     if(p.s){
       let nr=r+dr,nc=c+dc;
       while(nr>=0&&nr<BS&&nc>=0&&nc<BS){
         const tt=board[nr][nc];
-        if(tt){if(tt.t===opp){let lr=nr+dr,lc=nc+dc;while(lr>=0&&lr<BS&&lc>=0&&lc<BS&&!board[lr][lc]){mv.push({c:lc,r:lr,cap:{c:nc,r:nr}});lr+=dr;lc+=dc;}}break;}
+        if(tt){
+          if(tt.t===opp){
+            let lr=nr+dr,lc=nc+dc;
+            while(lr>=0&&lr<BS&&lc>=0&&lc<BS&&!board[lr][lc]){
+              mv.push({c:lc,r:lr,cap:{c:nc,r:nr}});lr+=dr;lc+=dc;
+            }
+          }
+          break;
+        }
         nr+=dr;nc+=dc;
       }
     } else {
       const mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc;
       if(mr>=0&&mr<BS&&mc>=0&&mc<BS&&lr>=0&&lr<BS&&lc>=0&&lc<BS)
-        if(board[mr][mc]&&board[mr][mc].t===opp&&!board[lr][lc]) mv.push({c:lc,r:lr,cap:{c:mc,r:mr}});
+        if(board[mr][mc]&&board[mr][mc].t===opp&&!board[lr][lc])
+          mv.push({c:lc,r:lr,cap:{c:mc,r:mr}});
     }
   }
   return mv;
@@ -2290,21 +2024,306 @@ function getKillsB(board,c,r,p){
 function getMovesB(board,c,r,p){
   const mv=[];
   const f=p.t==='red'?-1:1;
-  const dirs=p.s?[[0,1],[0,-1],[1,0],[-1,0],...(onDiag(c,r)?[[1,1],[1,-1],[-1,1],[-1,-1]]:[])]:[[f,0],...(onDiag(c,r)?[[f,1],[f,-1]]:[])];
+  const onDiagB=c%2===r%2;
+  const dirs=p.s
+    ?[[0,1],[0,-1],[1,0],[-1,0],...(onDiagB?[[1,1],[1,-1],[-1,1],[-1,-1]]:[])]
+    :[[f,0],...(onDiagB?[[f,1],[f,-1]]:[])];
   for(const [dr,dc] of dirs){
-    if(p.s){let nr=r+dr,nc=c+dc;while(nr>=0&&nr<BS&&nc>=0&&nc<BS){if(board[nr][nc])break;mv.push({c:nc,r:nr});nr+=dr;nc+=dc;}}
-    else{const nr=r+dr,nc=c+dc;if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&!board[nr][nc])mv.push({c:nc,r:nr});}
+    if(p.s){
+      let nr=r+dr,nc=c+dc;
+      while(nr>=0&&nr<BS&&nc>=0&&nc<BS){if(board[nr][nc])break;mv.push({c:nc,r:nr});nr+=dr;nc+=dc;}
+    } else {
+      const nr=r+dr,nc=c+dc;
+      if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&!board[nr][nc])mv.push({c:nc,r:nr});
+    }
   }
   return mv;
 }
 
-function cloneB(b){return b.map(r=>r.map(p=>p?{t:p.t,s:p.s}:null));}
-function applyB(b,f,tt){
-  const p=b[f.r][f.c]; if(!p) return;
-  b[tt.r][tt.c]=p; b[f.r][f.c]=null;
-  if(tt.cap) b[tt.cap.r][tt.cap.c]=null;
-  if(!p.s&&((p.t==='red'&&tt.r===0)||(p.t==='green'&&tt.r===BS-1))) p.s=true;
+function aiTurn(){
+  if(G.over||G.turn!=='green') return;
+  if(G.phase==='atk'){
+    const wf={c:5,r:3};
+    if(G.board[wf.r]&&G.board[wf.r][wf.c]&&G.board[wf.r][wf.c].t==='green')
+      doMove(wf,{c:MC,r:MR});
+    return;
+  }
+  const lvl=Math.min(G.aiLv,4);
+  const depths=[0,1,3,4,5], times=[0,300,1000,2000,3500];
+  const depth=depths[lvl];
+  aiTimeLimit=times[lvl]; aiStartTime=Date.now();
+  const moves=getAllMoves(G.board,'green');
+  if(!moves.length) return;
+  if(lvl===1){
+    const caps=moves.filter(m=>m.to.cap);
+    const pool=caps.length?caps:moves;
+    doMoveAI(pool[Math.floor(Math.random()*pool.length)]); return;
+  }
+  let best=null,bestScore=-999999;
+  moves.sort((a,b)=>moveOrder(G.board,b,'green')-moveOrder(G.board,a,'green'));
+  for(const mv of moves){
+    if(Date.now()-aiStartTime>aiTimeLimit) break;
+    const nb=cloneB(G.board); applyB(nb,mv.from,mv.to);
+    const pp=nb[mv.to.r][mv.to.c];
+    let score;
+    if(mv.to.cap&&pp&&getKillsB(nb,mv.to.c,mv.to.r,pp).length>0)
+      score=chainNegamax(nb,mv.to.c,mv.to.r,pp,depth-1,-999999,999999,'green');
+    else
+      score=-negamax(nb,'red',depth-1,-999999,999999,'green');
+    if(score>bestScore){bestScore=score;best=mv;}
+  }
+  doMoveAI(best||moves[0]);
 }
+
+function doMoveAI(mv){
+  if(!mv) return;
+  const p=G.board[mv.from.r][mv.from.c];
+  if(!p||p.t!=='green') return;
+  const valid=[...pieceKills(mv.from.c,mv.from.r,p),...pieceMoves(mv.from.c,mv.from.r,p)];
+  if(!valid.some(m=>m.c===mv.to.c&&m.r===mv.to.r)){
+    const fb=getAllMoves(G.board,'green');
+    if(fb.length){const m2=fb[0];const p2=G.board[m2.from.r][m2.from.c];if(p2&&p2.t==='green')doMove(m2.from,m2.to);}
+    return;
+  }
+  aiMoveHistory.push({board:cloneB(G.board),turn:'green',from:mv.from.c+','+mv.from.r,to:mv.to.c+','+mv.to.r});
+  doMove(mv.from,mv.to);
+}
+
+
+function negamax(board,col,depth,alpha,beta,myCol){
+  if(Date.now()-aiStartTime>aiTimeLimit) return evalBoard(board,myCol);
+  const moves=getAllMoves(board,col);
+  if(!moves.length) return col===myCol?-80000:80000;
+  if(depth<=0) return evalBoard(board,myCol);
+  moves.sort((a,b)=>moveOrder(board,b,col)-moveOrder(board,a,col));
+  let best=-999999;
+  for(const mv of moves){
+    if(Date.now()-aiStartTime>aiTimeLimit) break;
+    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
+    const pp=nb[mv.to.r][mv.to.c];
+    let score;
+    if(mv.to.cap&&pp&&getKillsB(nb,mv.to.c,mv.to.r,pp).length>0)
+      score=chainNegamax(nb,mv.to.c,mv.to.r,pp,depth-1,-beta,-alpha,col);
+    else
+      score=-negamax(nb,col==='red'?'green':'red',depth-1,-beta,-alpha,myCol);
+    if(score>best) best=score;
+    if(score>alpha) alpha=score;
+    if(alpha>=beta) break;
+  }
+  return best;
+}
+
+function chainNegamax(board,c,r,p,depth,alpha,beta,col){
+  const kills=getKillsB(board,c,r,p);
+  if(!kills.length||depth<0) return -negamax(board,col==='red'?'green':'red',depth,alpha,beta,col==='green'?'green':'red');
+  let best=-999999;
+  for(const k of kills){
+    const nb=cloneB(board); applyB(nb,{c,r},k);
+    const np=nb[k.r][k.c];
+    let score;
+    if(np&&getKillsB(nb,k.c,k.r,np).length>0)
+      score=chainNegamax(nb,k.c,k.r,np,depth-1,alpha,beta,col);
+    else
+      score=-negamax(nb,col==='red'?'green':'red',depth-1,-beta,-alpha,col==='green'?'green':'red');
+    if(score>best) best=score;
+    if(score>alpha) alpha=score;
+    if(alpha>=beta) break;
+  }
+  return best;
+}
+
+function getAllMoves(board,col){
+  const res=[];
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c];
+    if(p&&p.t===col){const k=getKillsB(board,c,r,p);for(const m of k)res.push({from:{c,r},to:m});}
+  }
+  if(res.length) return res;
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c];
+    if(p&&p.t===col){const m=getMovesB(board,c,r,p);for(const mv of m)res.push({from:{c,r},to:mv});}
+  }
+  return res;
+}
+
+function moveOrder(board,mv,col){
+  let s=0;
+  const opp=col==='red'?'green':'red';
+
+  // 1. CAPTURES: priorité absolue
+  if(mv.to.cap){
+    const cp=board[mv.to.cap.r][mv.to.cap.c];
+    s+=cp?(cp.s?1500:500):500;
+    // Bonus chaîne
+    const nb=cloneB(board); applyB(nb,mv.from,mv.to);
+    const pp=nb[mv.to.r][mv.to.c];
+    if(pp) s+=getKillsB(nb,mv.to.c,mv.to.r,pp).length*300;
+    // Bonus si pièce capturée était menacée par nous
+    if(cp&&countThreatScore(board,mv.to.cap.c,mv.to.cap.r,col)>0) s+=200;
+  }
+
+  // 2. PROMOTION SULTAN
+  if((col==='green'&&mv.to.r===BS-1)||(col==='red'&&mv.to.r===0)) s+=1000;
+
+  // 3. SÉCURITÉ: pénalité forte si coup dangereux
+  const afterBoard=cloneB(board); applyB(afterBoard,mv.from,mv.to);
+  const threats=countThreatScore(afterBoard,mv.to.c,mv.to.r,col);
+  if(threats>0) s-=800*threats; // Très forte pénalité
+
+  // 4. FUIR: bonus si pièce actuelle est menacée
+  const currentThreat=countThreatScore(board,mv.from.c,mv.from.r,col);
+  if(currentThreat>0) s+=400;
+
+  // 5. MENACER: bonus si après le coup on menace l'adversaire
+  const pp2=afterBoard[mv.to.r][mv.to.c];
+  if(pp2) s+=getKillsB(afterBoard,mv.to.c,mv.to.r,pp2).length*100;
+
+  // 6. AVANCEMENT: bonus modéré (ne plus foncer bêtement)
+  const adv=col==='green'?mv.to.r:(BS-1-mv.to.r);
+  s+=adv*5; // Réduit de 12 à 5
+
+  // 7. CENTRE: léger bonus
+  s+=(4-Math.abs(mv.to.c-4))*4;
+
+  return s;
+}
+
+
+function evalBoard(board,myCol){
+  let score=0,myN=0,oppN=0,myS=0,oppS=0;
+  const opp=myCol==='red'?'green':'red';
+
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c]; if(!p) continue;
+    const mine=p.t===myCol;
+    if(mine){myN++;if(p.s)myS++;}else{oppN++;if(p.s)oppS++;}
+
+    let v=0;
+    const threatened=isPieceThreatened(board,c,r,p.t);
+    const kills=getKillsB(board,c,r,p);
+
+    if(p.s){
+      v=500;
+      v+=kills.length*50;
+      v+=getMovesB(board,c,r,p).length*15;
+      v+=(4-Math.max(Math.abs(c-4),Math.abs(r-4)))*25;
+      // Sultan menacé: grosse pénalité
+      if(threatened) v-=350;
+    } else {
+      v=130;
+      const adv=p.t==='green'?r:(BS-1-r);
+      v+=adv*18;
+
+      // Bonus promotion
+      if((p.t==='green'&&r>=7)||(p.t==='red'&&r<=1)) v+=200;
+      else if((p.t==='green'&&r>=6)||(p.t==='red'&&r<=2)) v+=90;
+      else if((p.t==='green'&&r>=5)||(p.t==='red'&&r<=3)) v+=40;
+
+      // Centre
+      v+=(4-Math.abs(c-4))*10;
+
+      // Captures disponibles = attaque
+      v+=kills.length*70;
+      // Bonus chaîne
+      for(const k of kills){
+        const nb=cloneB(board); applyB(nb,{c,r},k);
+        const pp=nb[k.r][k.c];
+        if(pp) v+=getKillsB(nb,k.c,k.r,pp).length*50;
+      }
+
+      // Connectivité = formation solide
+      let conn=0;
+      const dirs=[[0,1],[0,-1],[1,0],[-1,0],...(c%2===r%2?[[1,1],[1,-1],[-1,1],[-1,-1]]:[])];
+      for(const [dr,dc] of dirs){
+        const nr=r+dr,nc=c+dc;
+        if(nr>=0&&nr<BS&&nc>=0&&nc<BS&&board[nr][nc]&&board[nr][nc].t===p.t) conn++;
+      }
+      v+=conn*15;
+      if(conn===0) v-=25; // Pièce isolée = dangereuse
+
+      // PÉNALITÉ MENACE: cœur du problème
+      if(threatened){
+        // Compter combien de pièces adverses menacent cette pièce
+        let threatCount=0;
+        for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
+          const ep=board[rr][cc];
+          if(ep&&ep.t!==p.t&&getKillsB(board,cc,rr,ep).some(k=>k.cap&&k.cap.c===c&&k.cap.r===r))
+            threatCount++;
+        }
+        v-=180*threatCount; // Pénalité forte par menace
+      }
+
+      // Bonus si la pièce peut sécuriser en avançant
+      if(!threatened && adv>=3) v+=20;
+    }
+
+    mine?score+=v:score-=v;
+  }
+
+  // Matériel
+  score+=(myN-oppN)*110+(myS-oppS)*450;
+  if(oppN===0) return 999999;
+  if(myN===0) return -999999;
+
+  // Bonus fin de partie
+  if(oppN<=8) score+=(9-oppN)*120;
+  if(myN<=8) score-=(9-myN)*120;
+
+  // Mobilité (liberté de mouvement)
+  const myMvs=getAllMoves(board,myCol).length;
+  const oppMvs=getAllMoves(board,opp).length;
+  score+=(myMvs-oppMvs)*4;
+
+  // Bonus captures disponibles globales
+  let myKills=0,oppKills=0;
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const p=board[r][c];if(!p) continue;
+    const k=getKillsB(board,c,r,p).length;
+    if(p.t===myCol) myKills+=k; else oppKills+=k;
+  }
+  score+=(myKills-oppKills)*45;
+
+  return score;
+}
+
+
+function isPieceThreatened(board,c,r,color){
+  const opp=color==='red'?'green':'red';
+  for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
+    const p=board[rr][cc];
+    if(p&&p.t===opp&&getKillsB(board,cc,rr,p).some(k=>k.cap&&k.cap.c===c&&k.cap.r===r)) return true;
+  }
+  return false;
+}
+
+function getSafeMoves(board,col){ return getAllMoves(board,col); }
+
+function isMoveUnsafe(board,from,to,col){
+  const nb=cloneB(board),p=nb[from.r][from.c];
+  if(!p) return false;
+  nb[to.r][to.c]=p; nb[from.r][from.c]=null;
+  const opp=col==='red'?'green':'red';
+  // Vérifier capture directe (1 coup)
+  for(let r=0;r<BS;r++) for(let c=0;c<BS;c++){
+    const ep=nb[r][c];
+    if(ep&&ep.t===opp&&getKillsB(nb,c,r,ep).some(k=>k.cap&&k.cap.c===to.c&&k.cap.r===to.r))
+      return true;
+  }
+  return false;
+}
+
+function countThreatScore(board,c,r,col){
+  // Compter le score de danger d'une pièce (0=sûr, >0=danger)
+  const opp=col==='red'?'green':'red';
+  let threats=0;
+  for(let rr=0;rr<BS;rr++) for(let cc=0;cc<BS;cc++){
+    const ep=board[rr][cc];
+    if(ep&&ep.t===opp&&getKillsB(board,cc,rr,ep).some(k=>k.cap&&k.cap.c===c&&k.cap.r===r))
+      threats++;
+  }
+  return threats;
+}
+
 
 // ============================================================
 // HELPERS
@@ -2662,16 +2681,56 @@ function installPWA(){
 
 // Afficher bouton PWA sur iOS automatiquement
 window.addEventListener('load', function(){
-  // Détecter iOS incluant iPad avec iPadOS (qui se déclare comme Mac)
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) 
-    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const isStandalone = window.navigator.standalone 
-    || window.matchMedia('(display-mode: standalone)').matches;
-  if(isIOS && !isStandalone){
-    const btn = document.getElementById('btn-pwa');
-    if(btn) btn.style.display = '';
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1)
+    || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints>1);
+  const isStandalone = window.navigator.standalone===true
+    || window.matchMedia('(display-mode:standalone)').matches;
+  if(isStandalone){
+    // Déjà installé: cacher le bouton
+    const btn=document.getElementById('btn-pwa');
+    if(btn) btn.style.display='none';
+  } else if(isIOS){
+    const btn=document.getElementById('btn-pwa');
+    if(btn) btn.style.display='';
   }
 });
+
+// Timer 15s chaîne incomplète
+function startChainTimer15(piecePos, possibleKills){
+  if(G._chain15) clearTimeout(G._chain15);
+  G._chain15Pos = piecePos;
+  G._chain15Kills = possibleKills;
+  G._chain15 = setTimeout(function(){
+    G._chain15 = null;
+    if(G.over || G.sfMode) return;
+    if(!G.board[piecePos.r] || !G.board[piecePos.r][piecePos.c]) return;
+    const p = G.board[piecePos.r][piecePos.c];
+    const moreKills = pieceKills(piecePos.c, piecePos.r, p);
+    if(!moreKills.length) return;
+    if(G.soufla){
+      // Mode AUTO: déclencher soufla automatiquement
+      triggerSoufla(p.t, [piecePos]);
+    } else {
+      // Mode MANUEL: alerter l'adversaire qu'il peut réclamer
+      const opp = p.t==='red'?'green':'red';
+      const oppName = opp==='red'?G.p1:G.p2;
+      const sfb = document.getElementById('sfb');
+      sfb.textContent = L==='ar'
+        ?'⏱ 15 ثانية — '+oppName+' يمكنه المطالبة بسوفلة! اضغط 🚨'
+        :'⏱ 15s — '+oppName+' peut réclamer Soufla ! Appuyez 🚨';
+      sfb.style.display = 'block';
+      flashCell(piecePos.c, piecePos.r, 'rgba(255,165,0,.6)');
+      G._canClaim15 = piecePos;
+      setTimeout(function(){
+        if(!MS.active){ 
+          sfb.style.display='none'; 
+          G._canClaim15=null; 
+        }
+      }, 15000);
+    }
+  }, 15000);
+}
 
 function cn(pos){return 'ABCDEFGHI'[pos.r]+(pos.c+1);}
 
@@ -3015,6 +3074,8 @@ document.addEventListener('keydown',e=>{
 });
 window.addEventListener('load',()=>{
   loadMemory();
+  // Charger le cerveau partagé
+  setTimeout(loadSharedBrain, 1500);
   // Tracker le visiteur
   setTimeout(trackVisitor, 2000);
   setLang('fr');
